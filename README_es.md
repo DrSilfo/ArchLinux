@@ -1,34 +1,34 @@
 # Arch Linux
 
-Desde su [Página Oficial](https://www.archlinux-es.org/), puedes descargar la iSO y por medio de la comunidad contar con un soporte.
+[Página Oficial](https://www.archlinux-es.org/), puedes [descargar](https://www.archlinux-es.org/descargar/) la iSO y por medio de la comunidad contar con un soporte.
 
 # Objetivo
 
 Crear una guía que recopile todos los pasos necesarios para construir un entorno de escritorio a partir de una instalación limpia basada en la distribución de Arch Linux.
 
-# Instalación de Archlinux
+# Instalación de Arch Linux
 
 ## Configuración Inicial
 
-Iniciamos cambiando el teclado que por defecto viene en Inglés a Español:
+Iniciamos cambiando el teclado que por defecto viene en Inglés a Español, con el comando [loadkeys](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Loadkeys):
 
 ```bash
 loadkeys es
 ```
 
-Sincronizamos el reloj:
+Sincronizamos el reloj con el comando [timedatectl](https://wiki.archlinux.org/title/System_time):
 
 ```bash
 timedatectl set-ntp true
 ```
 
-Instalaremos previamente un paquete que se llama [Reflector](https://wiki.archlinux.org/title/Reflector):
+Instalaremos previamente un paquete que se llama [Reflector](https://wiki.archlinux.org/title/Reflector), con el uso de [pacman](https://wiki.archlinux.org/title/Pacman):
 
 ```bash
 pacman -Syy reflector
 ```
 
-Teniendo instalado el paquete [Reflector](https://wiki.archlinux.org/title/Reflector), vamos a selecionar el servidor más cercano para instalar los paquetes (Mirror), pero previamos necesitamos conocer cuales son los disponibles:
+Teniendo instalado el paquete [Reflector](https://wiki.archlinux.org/title/Reflector), vamos a selecionar el servidor más cercano para instalar los paquetes [Mirror](https://wiki.archlinux.org/title/Mirrors), pero previamos necesitamos conocer cuales son los disponibles:
 
 ```bash
 reflector --list-countries | more
@@ -48,29 +48,30 @@ pacman -Syyy
 
 ## Crea Particiones en el Disco
 
-Primero revisaremos cual es el dispositivo donde se encuentra el disco que vamos a usar:
+Primero revisaremos cual es el dispositivo donde se encuentra el disco que vamos a usar con el comando [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
 lsblk
 ```
-En mi caso voy a usar el /dev/sda.
 
-Tenemos que crear 3 particiones, una para los archivos de inicio o "boot", otra donde van a estar instalado Arch Linux, y finalmente otra para el SWAP, esta última se puede omitir en caso estes realizando esto en un entorno de "pruebas".
+  En mi caso voy a usar el /dev/sda.
 
-Nota: Como una merjo practica se deberia considerar una para el "/home".
+Tenemos que crear 3 particiones, una para los archivos de inicio o [boot](https://wiki.archlinux.org/title/Arch_boot_process), otra donde van a estar instalado Arch Linux, y finalmente otra para el [SWAP](https://wiki.archlinux.org/title/Swap), esta última se puede omitir en caso estes realizando esto en un entorno de "pruebas".
 
-Continuaremos con una estructura sencilla, para crear las particiones ejecutar:
+  Nota: Como mejor practica se deberia considerar una para el "/home".
+
+Continuaremos con una estructura sencilla, para crear las particiones ejecutaremos [cfdisk](https://wiki.archlinux.org/title/Fdisk):
 
 ```bash
 cfdisk
 ```
-ahí seleccionaremos "dos", y luego selecionamos "New"
+ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 
 Creamos la 1° partición y le asignamos un tamaño a la partición de 512M, a la 2° partición le asignamos un tamaño de 15GB y la 3° partición y le asignamos un tamaño de 4.5GB.
 
 Seleccionada la última partición vamos a "Type" y le indicamos la opción "82 Linux swap / Solaris".
 
-Finalmente seleccionamos "Write" y le ponemos "yes" y validamos con:
+Finalmente seleccionamos "Write" y le ponemos "yes" y validamos con [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
 lsblk
@@ -78,13 +79,13 @@ lsblk
 
 ## Formatea las Particiones
 
-Para la primera partición ejecutaremos:
+Para la primera partición ejecutaremos [mkfs](https://wiki.archlinux.org/title/File_systems#Create_a_file_system):
 
 ```bash
 mkfs.vfat -F 32 /dev/sda1
 ```
 
-Para la segunda partición (De archivos de sistema) ejecutaremos: 
+Para la segunda partición (De archivos de sistema) ejecutaremos [mkfs](https://wiki.archlinux.org/title/File_systems#Create_a_file_system): 
 
 ```bash
 mkfs.ext4  /dev/sda2
@@ -123,7 +124,7 @@ Montamos la primera partición en:
 mount /dev/sda1 /mnt/boot
 ```
 
-Verificamos que las particiones estén montadas correctamente utilizando:
+Verificamos que las particiones estén montadas correctamente utilizando [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
 lsblk
@@ -138,7 +139,7 @@ Una vez montadas las particiones comenzamos la instalación de los paquetes base
 ```bash
 pacstrap /mnt base linux linux-firmware base base-devel grub vim
 ```
-### Crear fstab
+### Crear [fstab](https://wiki.archlinux.org/title/Fstab)
 
 Este archivo contiene información del montaje de las particiones, para crearlo ejecutamos lo siguiente:
 
@@ -146,7 +147,7 @@ Este archivo contiene información del montaje de las particiones, para crearlo 
 genfstab -U /mnt > /mnt/etc/fstab
 ```
 
-### Instalar el GRUB
+### Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
 
 Listo, ya que hemos creado el archivo "fstab" y que las particiones estas correctamente configuradas, vamos a ingresar a la instalación base e iniciar con la configuración:
 
