@@ -296,3 +296,5 @@ Con esto terminamos la instalación, así que solo queda:
 exit
 reboot
 ```
+
+Finalmente tenemos una instalación limpia...
