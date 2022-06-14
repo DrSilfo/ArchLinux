@@ -34,7 +34,7 @@ Teniendo instalado el paquete [Reflector](https://wiki.archlinux.org/title/Refle
 reflector --list-countries | more
 ```
 
-Una vez identificado el país y su codigo que se encuentre mas cercado, ejecutamos lo siguiente:
+Una vez identificado el país y su codigo que se encuentre mas cercano, ejecutamos lo siguiente:
 
 ```bash
 reflector -c "Ecuador" -a 6 --sort rate --save /etc/pacman.d/mirrorlist
