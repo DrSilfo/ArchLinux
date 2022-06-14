@@ -136,7 +136,7 @@ Una vez montadas las particiones comenzamos la instalación de los paquetes base
   Nota: Estamos indicando la ruta "/mnt", para la instalación
 
 ```bash
-pacstrap /mnt base linux linux-firmware base base-devel vim
+pacstrap /mnt base linux linux-firmware base base-devel grub vim
 ```
 ### Crear fstab
 
@@ -146,13 +146,27 @@ Este archivo contiene información del montaje de las particiones, para crearlo 
 genfstab -U /mnt > /mnt/etc/fstab
 ```
 
-### Configuración de tu zona horaria
+### Instalar el GRUB
 
 Listo, ya que hemos creado el archivo "fstab" y que las particiones estas correctamente configuradas, vamos a ingresar a la instalación base e iniciar con la configuración:
 
 ```bash
 arch-chroot /mnt
 ```
+
+Instalamos el grub en el "/dev/sda".
+
+```bash
+grub-install /dev/sda
+```
+
+Ahora crearemos el archivo de configuración
+
+```bash
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+### Configuración de tu zona horaria
 
 Primero vamos a ver un listado de las zonas horarias disponibles.
 
@@ -216,7 +230,7 @@ echo archcat > /etc/hostname
 Abrimos el archivo "/etc/hosts"
 
 ```bash
-vim /etc/hostname
+vim /etc/hosts
 ```
 Y agregamos:
 
@@ -241,7 +255,7 @@ passwd
  Es momento de instalar nuestro "boot loader", y paquetes finales antes de reiniciar.
   
 ```bash
-pacman -S grub networkmanager network-manager-applet wpa_supplicant dialog os-prober mtools dosfstools base-devel linux-headers reflector openssh git xdg-utils xdg-user-dirs
+pacman -S networkmanager network-manager-applet wpa_supplicant dialog os-prober mtools dosfstools base-devel linux-headers reflector openssh git xdg-utils xdg-user-dirs
 ```
 
 ### Habilita los servicios
@@ -265,7 +279,7 @@ useradd -mG wheel drsilfo
 passwd drsilfo
 ```
 
-Ahora debemos darle privilegios de "sudo" y puedas ejecutar comandos como superusuario "root", debemos descomentar la linea que dice "%wheel ALL=(ALL) ALL".
+Ahora debemos darle privilegios de "sudo" y puedas ejecutar comandos como superusuario "root", debemos descomenta la linea que dice "%wheel ALL=(ALL:ALL) ALL".
 
 Para ejecutaremos: 
 
