@@ -94,7 +94,7 @@ mkfs.ext4  /dev/sda2
 Para la tercera partición (SWAP) ejecutaremos:
 
 ```bash
-mkfswap  /dev/sda3
+mkswap  /dev/sda3
 ```
 
 Para aplicar los cambios ejecutamos:
