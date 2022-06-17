@@ -256,7 +256,7 @@ passwd
  Es momento de instalar nuestro "boot loader", y paquetes finales antes de reiniciar.
   
 ```bash
-pacman -S networkmanager network-manager-applet wpa_supplicant dialog os-prober mtools dosfstools base-devel linux-headers reflector openssh git xdg-utils xdg-user-dirs
+pacman -S networkmanager network-manager-applet wpa_supplicant dialog os-prober mtools dosfstools linux-headers reflector openssh git xdg-utils xdg-user-dirs
 ```
 
 ### Habilita los servicios
