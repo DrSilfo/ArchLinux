@@ -137,7 +137,7 @@ Una vez montadas las particiones comenzamos la instalación de los paquetes base
   Nota: Estamos indicando la ruta "/mnt", para la instalación
 
 ```bash
-pacstrap /mnt base linux linux-firmware base base-devel grub vim
+pacstrap /mnt linux linux-firmware base base-devel grub vim
 ```
 ### Crear [fstab](https://wiki.archlinux.org/title/Fstab)
 
