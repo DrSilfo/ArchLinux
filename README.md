@@ -247,7 +247,10 @@ Y agregamos:
 ::1		    localhost
 127.0.1.1	archcat.localhost	archcat
 ```
-
+Configuramos el /etc/hostname
+```bash
+echo drsilfo > /etc/hostname
+```
 ### Creamos una contraseña para el root
 
 En esta paso de la instalación es entregarle una contraseña a nuestro root, como ya nos encontramos en nuestra instalación, para cambiar la contraseña escribimos:
