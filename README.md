@@ -10,7 +10,9 @@ Crear una guía que recopile todos los pasos necesarios para construir un entorn
 
 ## Configuración Maquina Virtual
 
-Tamaño en disco de 90 GB | tamaño de memoría 4GB | Procesador 2
+Tamaño en disco de 90 GB
+Tamaño de memoría 4GB
+Cantidad de Procesadores 2
 
 ## Configuración Inicial
 
