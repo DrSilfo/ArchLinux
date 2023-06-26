@@ -10,9 +10,9 @@ Crear una guía que recopile todos los pasos necesarios para construir un entorn
 
 ## Configuración Maquina Virtual
 
-Tamaño en disco de 90 GB
-Tamaño de memoría 4GB
-Cantidad de Procesadores 2
+* Tamaño en disco de 90 GB
+* Tamaño de memoría 4GB
+* Cantidad de Procesadores 2
 
 ## Configuración Inicial
 
@@ -73,9 +73,9 @@ cfdisk
 ```
 ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 
-Creamos la 1° partición y le asignamos un tamaño a la partición de 512M
-Creamos la 2° partición le asignamos un tamaño de 15GB
-Creamos la 3° partición y le asignamos un tamaño de 4.5GB
+* Creamos la 1° partición y le asignamos un tamaño de 512M
+* Creamos la 2° partición y le asignamos un tamaño de 15GB
+* Creamos la 3° partición y le asignamos un tamaño de 4.5GB
 
 Seleccionada la última partición vamos a "Type" y le indicamos la opción "Linux swap".
 
@@ -152,7 +152,6 @@ pacstrap /mnt linux linux-firmware base base-devel grub vim
 Este archivo contiene información del montaje de las particiones, para crearlo ejecutamos lo siguiente:
 
 ```bash
-genfstab -U /mnt
 genfstab -U /mnt > /mnt/etc/fstab
 ```
 
@@ -231,10 +230,10 @@ echo KEYMAP=es > /etc/vconsole.conf
 
 Crear el archivo "hostname", para darle un nombre a tu máquina:
 
-  Ejemplo: archcat
+  Ejemplo: gpmpconsulting
   
 ```bash
-echo archcat > /etc/hostname
+echo gpmpconsulting > /etc/hostname
 ```
 
 Abrimos el archivo "/etc/hosts"
@@ -247,13 +246,8 @@ Y agregamos:
 ```bash
 127.0.0.1	localhost
 ::1		    localhost
-127.0.1.1	archcat.localhost	archcat
+127.0.1.1	gpmpconsulting.localhost	gpmpconsulting
 ```
-Configuramos el /etc/hostname
-```bash
-echo drsilfo > /etc/hostname
-```
-### Creamos una contraseña para el root
 
 En esta paso de la instalación es entregarle una contraseña a nuestro root, como ya nos encontramos en nuestra instalación, para cambiar la contraseña escribimos:
 
@@ -275,8 +269,8 @@ pacman -S networkmanager network-manager-applet wpa_supplicant dialog os-prober 
 
 Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
 
-  1.- Habilita el manejador de la red.
-  2.- Continua con el servicio de SSH
+  * Habilita el manejador de la red.
+  * Continua con el servicio de SSH
   
 ```bash
 systemctl enable NetworkManager
@@ -310,3 +304,26 @@ reboot
 ```
 
 Finalmente tenemos una instalación limpia...
+
+# Repositorios
+
+## Repositorios [AUR](https://aur.archlinux.org/)
+
+Instalamos el repositorio, considerar realizar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/<usuario>/repositorio"
+
+```bash
+git clone https://aur.archlinux.org/paru-bin.git
+cd paru-bin/
+makepkg -si
+```
+## Repositorios [BLACKARCH](https://blackarch.org/)
+
+Instalamos el repositorio, considerar colocar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/<usuario>/repositorio"
+
+```bash
+mkdir blackarch
+curl -O https://blackarch.org/strap.sh
+chmod +x strap.sh
+sudo su
+./strap.sh
+```
