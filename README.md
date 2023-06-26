@@ -8,6 +8,10 @@ Crear una guía que recopile todos los pasos necesarios para construir un entorn
 
 # Instalación de Arch Linux
 
+## Configuración Maquina Virtual
+
+Tamaño en disco de 90 GB | tamaño de memoría 4GB | Procesador 2
+
 ## Configuración Inicial
 
 Iniciamos cambiando el teclado que por defecto viene en Inglés a Español, con el comando [loadkeys](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Loadkeys):
@@ -67,7 +71,9 @@ cfdisk
 ```
 ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 
-Creamos la 1° partición y le asignamos un tamaño a la partición de 512M, a la 2° partición le asignamos un tamaño de 15GB y la 3° partición y le asignamos un tamaño de 4.5GB.
+Creamos la 1° partición y le asignamos un tamaño a la partición de 512M
+Creamos la 2° partición le asignamos un tamaño de 15GB
+Creamos la 3° partición y le asignamos un tamaño de 4.5GB
 
 Seleccionada la última partición vamos a "Type" y le indicamos la opción "Linux swap".
 
@@ -144,6 +150,7 @@ pacstrap /mnt linux linux-firmware base base-devel grub vim
 Este archivo contiene información del montaje de las particiones, para crearlo ejecutamos lo siguiente:
 
 ```bash
+genfstab -U /mnt
 genfstab -U /mnt > /mnt/etc/fstab
 ```
 
