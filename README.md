@@ -69,7 +69,7 @@ ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 
 Creamos la 1° partición y le asignamos un tamaño a la partición de 512M, a la 2° partición le asignamos un tamaño de 15GB y la 3° partición y le asignamos un tamaño de 4.5GB.
 
-Seleccionada la última partición vamos a "Type" y le indicamos la opción "82 Linux swap / Solaris".
+Seleccionada la última partición vamos a "Type" y le indicamos la opción "Linux swap".
 
 Finalmente seleccionamos "Write" y le ponemos "yes" y validamos con [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
