@@ -14,19 +14,101 @@ Crear una guía que recopile todos los pasos necesarios para construir un entorn
 * Tamaño de memoría 4GB
 * Cantidad de Procesadores 2
 
-## Configuración Inicial
+## Pre-Instalación
+
+**Establecer distribución del teclado temporal para que reconozca todos los caracteres**
 
 Iniciamos cambiando el teclado que por defecto viene en Inglés a Español, con el comando [loadkeys](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Loadkeys):
 
 ```bash
-loadkeys es
+root@archiso ~ # loadkeys es
 ```
 
-Sincronizamos el reloj con el comando [timedatectl](https://wiki.archlinux.org/title/System_time):
+**Conéctese a Internet**
+
+Se recomienda usar la conexión por cable en ves de la inalámbrica, para mayor estabilidad y velocidad del Internet.
+Para conexión por cable tan solo es necesario tener conectado el cable de Ethernet.
+Luego hacer un ping para verificar la conexión a Internet.
 
 ```bash
-timedatectl set-ntp true
+root@archiso ~ # ping -c 3 archlinux.org
 ```
+* El parámetro -c 3 establece que se ejecute ping tres veces.
+* Por defecto en la ISO habilita el servicio de dhcpcd para el uso de red cableada.
+
+> Nota: Si falló al hacer el ping es probable que haya conectado el cable Ethernet luego de haber iniciado el live usb, por eso lo normal es que el servicio dhcpcd no se haya iniciado correctamente, así que vamos a iniciar el servicio.
+```bash
+root@archiso ~ # systemctl start dhcpcd
+```
+> Ahora verifique que el cable Ethernet está bien conectado y vuelva a hacer un ping.
+```bash
+root@archiso ~ # ping -c 3 archlinux.org
+```
+> Ya debería estar recibiendo datos al hacer ping, lo que indica que ya tiene conexión a Intenet, de lo contrario reinicie y vuelva a entrar al live usb para iniciar correctamente los servicios.
+
+## Configuración Inicial
+
+Vamos a configurar el idioma temporal de las herramientas disponibles a nuestro idioma español, sobre todo las de particionado.
+```bash
+root@archiso ~ # echo "es_ES.UTF-8 UTF-8" > /etc/locale.gen
+```
+Ahora vamos a generar la configuración regional.
+```bash
+root@archiso ~ # locale-gen
+```
+Exportamos la variable LANG para finalizar la configuración regional temporal.
+```bash
+root@archiso ~ # export LANG=es_ES.UTF-8
+```
+Sincronizamos el reloj con el comando [timedatectl](https://wiki.archlinux.org/title/System_time):
+```bash
+root@archiso ~ # timedatectl set-ntp true
+```
+**Verificamos el modo de arranque**
+
+Verificamos si la placa base es compatible con **UEFI**, consultando si existe el directorio especificado y mostrando resultado con archivos existentes, caso contrario de no mostrar información ni archivos el arranque solo es compatible con **BIOS/Legacy**.
+```bash
+root@archiso ~ # ls /sys/firmware/efi/efivars
+```
+**Tabla de partición (UEFI o BIOS/Legacy)**
+
+Existen dos tablas de particiones disponibles para usar, MBR/dos o GPT
+* **MRB/dos** para tarjetas madre compatibles con BIOS/Legacy.
+* **GPT** para tarjetas madre compatibles con EFI y UEFI.
+
+> UEFI = Tabla de partición GPT. | BIOS = Tabla de partición MBR/dos.
+
+Para consultar la tabla de particiones que tiene su disco duro donde va a instalar el Sistema Operativo use el siguiente comando.
+```bash
+root@archiso ~ # fdisk -l
+```
+* Es importante saber cual es la ruta de nuestro almacenamiento
+* Nuestro caso es /dev/sda: 90Gib con su tabla de partición MBR (dos/msdos)
+* Los resultados que terminan en [rom, loop o airoot] pueden ignorarse.
+* En este caso /dev/loop0 es la imagen ISO de ArchLinux.
+
+Si usted ve la necesidad de cambiar de una tabla de partición a otra, use una de las siguientes opciones.Tenga en cuenta que **este procedimiento eliminará la información del dispositivo de almacenamiento escogido.**
+
+Para convertir de MBR a GPT
+
+```bash
+root@archiso ~ # parted /dev/sda mklabel gpt
+```
+Para convertir de GTP a MBR
+
+```bash
+root@archiso ~ # parted /dev/sda mklabel msdos
+```
+
+Otra opción para consultar la tabla de particiones que tiene su disco duro
+
+```bash
+root@archiso ~ # parted -l | egrep "Model|/dev/sd|msdos|gpt"
+```
+
+
+
+
 
 Instalaremos previamente un paquete que se llama [Reflector](https://wiki.archlinux.org/title/Reflector), con el uso de [pacman](https://wiki.archlinux.org/title/Pacman):
 
