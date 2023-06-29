@@ -23,9 +23,7 @@ Iniciamos cambiando el teclado que por defecto viene en Inglés a Español, con 
 ```bash
 root@archiso ~ # loadkeys es
 ```
-Se recomienda usar la conexión por cable en ves de la inalámbrica, para mayor estabilidad y velocidad del Internet.
-Para conexión por cable tan solo es necesario tener conectado el cable de Ethernet.
-Luego hacer un ping para verificar la conexión a Internet.
+Se recomienda utilizar la conexión por cable en lugar de la conexión inalámbrica, ya que proporciona una mayor estabilidad y velocidad a tu conexión a Internet. Para establecer una conexión por cable, simplemente necesitas conectar el cable Ethernet. Después, puedes hacer un ping para verificar la conexión a Internet.
 
 ```bash
 root@archiso ~ # ping -c 3 archlinux.org
@@ -33,7 +31,8 @@ root@archiso ~ # ping -c 3 archlinux.org
 * El parámetro -c 3 establece que se ejecute ping tres veces.
 * Por defecto en la ISO habilita el servicio de dhcpcd para el uso de red cableada.
 
-> Nota: Si falló al hacer el ping es probable que haya conectado el cable Ethernet luego de haber iniciado el live usb, por eso lo normal es que el servicio dhcpcd no se haya iniciado correctamente, así que vamos a iniciar el servicio.
+> Nota: Si has tenido problemas al hacer el ping, es probable que hayas conectado el cable Ethernet después de haber iniciado el live USB. Lo más común en esta situación es que el servicio dhcpcd no se haya iniciado correctamente. Por lo tanto, vamos a proceder a iniciar el servicio.
+
 ```bash
 root@archiso ~ # systemctl start dhcpcd
 ```
@@ -61,6 +60,8 @@ Sincronizamos el reloj con el comando [timedatectl](https://wiki.archlinux.org/t
 ```bash
 root@archiso ~ # timedatectl set-ntp true
 ```
+> Nota: La sincronización es opcional.
+
 **Verificamos el modo de arranque**
 
 Verificamos si la placa base es compatible con **UEFI**, consultando si existe el directorio especificado y mostrando resultado con archivos existentes, caso contrario de no mostrar información ni archivos el arranque solo es compatible con **BIOS/Legacy**.
@@ -84,7 +85,7 @@ root@archiso ~ # fdisk -l
 * Los resultados que terminan en [rom, loop o airoot] pueden ignorarse.
 * En este caso /dev/loop0 es la imagen ISO de ArchLinux.
 
-Si usted ve la necesidad de cambiar de una tabla de partición a otra, use una de las siguientes opciones.Tenga en cuenta que **este procedimiento eliminará la información del dispositivo de almacenamiento escogido.**
+Si usted ve la necesidad de cambiar de una tabla de partición a otra, use una de las siguientes opciones.Tenga en cuenta que este procedimiento eliminará la información del dispositivo de almacenamiento escogido.
 
 Para convertir de MBR a GPT
 
@@ -102,33 +103,33 @@ Otra opción para consultar la tabla de particiones que tiene su disco duro
 ```bash
 root@archiso ~ # parted -l | egrep "Model|/dev/sd|msdos|gpt"
 ```
+**Disco Duro: **Primero, es importante identificar la estructura de los discos para determinar las rutas y las particiones correspondientes.
 
+Las rutas del disco pueden ser: 
 
-
-
-
-Instalaremos previamente un paquete que se llama [Reflector](https://wiki.archlinux.org/title/Reflector), con el uso de [pacman](https://wiki.archlinux.org/title/Pacman):
+* /dev/sda (sdd o hdd)
+* /dev/sdb (sdd o hdd)
+* /dev/sdc (Así cambia de letra...)
+* /dev/nvme0n1 (veMMC o SD Card)
+* /dev/mmcblk0 (veMMC o SD Card)
 
 ```bash
-pacman -Syy reflector
+root@archiso ~ # lsblk -Spo NAME,MODEL,SIZE
 ```
+**Particiones: **Podrían ser: 
 
-Teniendo instalado el paquete [Reflector](https://wiki.archlinux.org/title/Reflector), vamos a selecionar el servidor más cercano para instalar los paquetes [Mirror](https://wiki.archlinux.org/title/Mirrors), pero previamos necesitamos conocer cuales son los disponibles:
-
-```bash
-reflector --list-countries | more
-```
-
-Una vez identificado el país y su codigo que se encuentre mas cercano, ejecutamos lo siguiente:
-
-```bash
-reflector -c "Ecuador" -a 6 --sort rate --save /etc/pacman.d/mirrorlist
-```
-
-Ahora actualizaremos los pquetes:
+* /dev/sda1
+* /dev/sda2
+* /dev/sda3
+* /dev/nvme0n1p1
+* /dev/nvme0n1p2
+* /dev/nvme0n1p3
+* /dev/mmcblk0p1
+* /dev/mmcblk0p2
+* /dev/mmcblk0p3
 
 ```bash
-pacman -Syyy
+root@archiso ~ # lsblk
 ```
 
 ## Crea Particiones en el Disco
