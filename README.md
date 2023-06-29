@@ -16,16 +16,13 @@ Crear una guía que recopile todos los pasos necesarios para construir un entorn
 
 ## Pre-Instalación
 
-**Establecer distribución del teclado temporal para que reconozca todos los caracteres**
+Para lograr el reconocimiento de todos los caracteres, es necesario configurar una distribución temporal del teclado de manera adecuada.
 
 Iniciamos cambiando el teclado que por defecto viene en Inglés a Español, con el comando [loadkeys](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Loadkeys):
 
 ```bash
 root@archiso ~ # loadkeys es
 ```
-
-**Conéctese a Internet**
-
 Se recomienda usar la conexión por cable en ves de la inalámbrica, para mayor estabilidad y velocidad del Internet.
 Para conexión por cable tan solo es necesario tener conectado el cable de Ethernet.
 Luego hacer un ping para verificar la conexión a Internet.
