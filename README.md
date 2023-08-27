@@ -154,8 +154,8 @@ cfdisk
 ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 
 * Creamos la 1° partición y le asignamos un tamaño de 512M
-* Creamos la 2° partición y le asignamos un tamaño de 15GB
-* Creamos la 3° partición y le asignamos un tamaño de 4.5GB
+* Creamos la 2° partición y le asignamos un tamaño de 81,5G
+* Creamos la 3° partición y le asignamos un tamaño de 8G
 
 Seleccionada la última partición vamos a "Type" y le indicamos la opción "Linux swap".
 
