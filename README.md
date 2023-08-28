@@ -235,31 +235,6 @@ Este archivo contiene información del montaje de las particiones, para crearlo 
 ```bash
 genfstab -U /mnt > /mnt/etc/fstab
 ```
-## Instala los paquetes "recomendados"
-   
-```bash
-pacman -S dhcpd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
-```
-> Paquetes adicionales: dialog os-prober mtools dosfstools   
-
-## Habilita los servicios
-
-Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
-
-  * Habilita el manejador de la red.
-  * Continua con el servicio de SSH
-  
-```bash
-systemctl enable dhcpd
-systemctl enable NetworkManager
-systemctl enable iwd
-```
-## Instala los paquetes "adicionales"
-
-```bash
-pacman -S vim git wget curl openssh neofetch htop unzip p7zip lsb-release
-```
-
 ## Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
 
 Listo, ya que hemos creado el archivo "fstab" y que las particiones estas correctamente configuradas, vamos a ingresar a la instalación base e iniciar con la configuración:
@@ -289,6 +264,30 @@ Ahora crearemos el archivo de configuración
 
 ```bash
 grub-mkconfig -o /boot/grub/grub.cfg
+```
+## Instala los paquetes "recomendados"
+   
+```bash
+pacman -S dhcpd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
+```
+> Paquetes adicionales: dialog os-prober mtools dosfstools   
+
+## Habilita los servicios
+
+Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
+
+  * Habilita el manejador de la red.
+  * Continua con el servicio de SSH
+  
+```bash
+systemctl enable dhcpd
+systemctl enable NetworkManager
+systemctl enable iwd
+```
+## Instala los paquetes "adicionales"
+
+```bash
+pacman -S vim git wget curl openssh neofetch htop unzip p7zip lsb-release
 ```
 
 ## Configuración de tu zona horaria
