@@ -315,7 +315,7 @@ Ahora podemos sincronizar el reloj del sistema con el reloj del hardware:
 hwclock -w
 ```
 
-## Configura tu "Localización"
+## Configurar "Localización"
 
 Esto es para indicarle a Arh Linux donde nos ubicamos y cual es el grupo de caracteres que corresponden a tu idioma.
 
