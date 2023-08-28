@@ -252,6 +252,7 @@ grub-install /dev/sda
 Deshabilitar el arranque silencio del grub (Opcional):
 
 ```bash
+pacman -S vim
 vim /etc/default/grub
 ```
 Eliminar la palabra "quiet", debería quedar de la siguiente manera:
@@ -268,7 +269,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 ## Instala los paquetes "recomendados"
    
 ```bash
-pacman -S dhcpd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
+pacman -S dhcp iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
 ```
 > Paquetes adicionales: dialog os-prober mtools dosfstools   
 
