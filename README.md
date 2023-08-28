@@ -157,13 +157,14 @@ ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 * Creamos la 2° partición y le asignamos un tamaño de 81,5G
 * Creamos la 3° partición y le asignamos un tamaño de 8G
 
-Seleccionada la última partición vamos a "Type" y le indicamos la opción "Linux swap".
+Seleccionada la última partición vamos a "Tipo" y le indicamos la opción "Linux swap".
 
-Finalmente seleccionamos "Write" y le ponemos "yes" y validamos con [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
+Finalmente seleccionamos "Escribir" y le ponemos "yes" y validamos con [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
 lsblk
 ```
+Luego salimos de la herramienta con la opción "Salir"
 
 ## Formatea las Particiones
 
@@ -218,24 +219,53 @@ Verificamos que las particiones estén montadas correctamente utilizando [lsblk]
 lsblk
 ```
 
-### Instala los paquetes "base"
+## Instala los paquetes "base"
 
 Una vez montadas las particiones comenzamos la instalación de los paquetes base:
 
   Nota: Estamos indicando la ruta "/mnt", para la instalación
 
 ```bash
-pacstrap /mnt linux linux-firmware base base-devel grub vim
+pacstrap /mnt linux linux-firmware linux-headers base base-devel grub
 ```
-### Crear [fstab](https://wiki.archlinux.org/title/Fstab)
+## Crear [fstab](https://wiki.archlinux.org/title/Fstab)
 
 Este archivo contiene información del montaje de las particiones, para crearlo ejecutamos lo siguiente:
 
 ```bash
 genfstab -U /mnt > /mnt/etc/fstab
 ```
+## Instala los paquetes "recomendados"
+   
+```bash
+pacman -S dhcpd iwd net-tools ifplugd networkmanager unzip tar p7zip htop reflector xdg-utils xdg-user-dirs
+```
+> Paquetes adicionales: dialog os-prober mtools dosfstools   
 
-### Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
+Nota: Si tuvieramos wireless instalariamos:
+
+```bash
+pacman -S iw wireless_tools wpa_supplicant wireless-regdb
+```
+## Habilita los servicios
+
+Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
+
+  * Habilita el manejador de la red.
+  * Continua con el servicio de SSH
+  
+```bash
+systemctl enable dhcpd
+systemctl enable NetworkManager
+systemctl enable iwd
+```
+## Instala los paquetes "adicionales"
+
+```bash
+pacman -S vim git wget curl openssh neofetch lsb-release
+```
+
+## Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
 
 Listo, ya que hemos creado el archivo "fstab" y que las particiones estas correctamente configuradas, vamos a ingresar a la instalación base e iniciar con la configuración:
 
@@ -249,35 +279,48 @@ Instalamos el grub en el "/dev/sda".
 grub-install /dev/sda
 ```
 
+Deshabilitar el arranque silencio del grub (Opcional):
+
+```bash
+vim /etc/default/grub
+```
+Eliminar la palabra "quiet", debería quedar de la siguiente manera:
+
+```bash
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
+```
+
 Ahora crearemos el archivo de configuración
 
 ```bash
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### Configuración de tu zona horaria
+## Configuración de tu zona horaria
 
-Primero vamos a ver un listado de las zonas horarias disponibles.
-
-  Nota: La zona horaria en mi caso es "Bogota", sustituye "Bogota" por la ciudad que te corresponda.
+Primero vamos a validar la zona horaria.
 
 ```bash
-timedatectl list-timezones | grep Bogota
+echo $( curl https://ipapi.co/timezone )
 ```
 
 Una vez identificada la zona horaria, creamos un enlace simbolico en "/etc/localtime"
 
 ```bash
-ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
+ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
 ```
+Definimos la zona horaria según nos defina "https://ipapi.co/timezone"
 
+```bash
+timedatectl set-timezone America/Lima
+```
 Ahora podemos sincronizar el reloj del sistema con el reloj del hardware:
 
 ```bash
-hwclock --systohc
+hwclock -w
 ```
 
-### Configura tu "Localización"
+## Configura tu "Localización"
 
 Esto es para indicarle a Arh Linux donde nos ubicamos y cual es el grupo de caracteres que corresponden a tu idioma.
 
@@ -306,7 +349,28 @@ echo LANG=es_PE.UTF-8 > /etc/locale.conf
 echo KEYMAP=es > /etc/vconsole.conf
 ```
 
-### Configura la Red
+## Configuración de pacman
+
+Está configuración es opcional
+
+```bash
+vim /etc/pacman.conf
+```
+En "Misc options, debemos quitar algunos comentarios eliminando "#", y debería quedar de la siguiente manera:
+
+```bash
+#Misc Options
+#UseSysLog
+Color
+#NoProgressBar
+CheckSpace
+VerbosePkgLists
+ParallelDownloads = 5
+ILoveCandy
+```
+Guardamos el archivo.
+
+## Configura la Red
 
 Crear el archivo "hostname", para darle un nombre a tu máquina:
 
@@ -324,9 +388,9 @@ vim /etc/hosts
 Y agregamos:
 
 ```bash
-127.0.0.1	localhost
-::1		    localhost
-127.0.1.1	gpmpconsulting.localhost	gpmpconsulting
+127.0.0.1  localhost
+::1        localhost
+127.0.1.1  gpmpconsulting.localhost	gpmpconsulting
 ```
 
 En esta paso de la instalación es entregarle una contraseña a nuestro root, como ya nos encontramos en nuestra instalación, para cambiar la contraseña escribimos:
@@ -337,27 +401,20 @@ passwd
 
   Nota: En el prompt escribes la contraseña y en el siguiente vuelve a escribir la contraseña para confirmarlo.
   
- ### Instala los paquetes finales
-  
- Es momento de instalar nuestro "boot loader", y paquetes finales antes de reiniciar.
-  
+ ## Configurar las mirror con Reflector
+
+Podremos contar con los mejores mirror con la mejor velocidad de descargar y haciendo uso de un protocolo https.
+
 ```bash
-pacman -S networkmanager network-manager-applet wpa_supplicant dialog os-prober mtools dosfstools linux-headers reflector openssh git xdg-utils xdg-user-dirs
+reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+```
+Podriamos validar con el siguiente comando:
+
+```bash
+cat /etc/pacman.d/mirrorlist
 ```
 
-### Habilita los servicios
-
-Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
-
-  * Habilita el manejador de la red.
-  * Continua con el servicio de SSH
-  
-```bash
-systemctl enable NetworkManager
-systemctl enable sshd
-```
-
-### Crea el usuario
+## Crea el usuario
 
 Durante todo el proceso hemos hecho uso del usuario "root", pero las buenas practicas indican que se debe tener un usuario para la tareas diarias. Creare en mi caso el usuario "drsilfo" y le asignare una contraseña como lo hicimos con el usuario "root".
 
@@ -374,7 +431,7 @@ Para ejecutaremos:
 EDITOR=vim visudo
 ```
 
-### Salir de la Instalación y Reinicia la Máquina
+## Salir de la Instalación y Reinicia la Máquina
 
 Con esto terminamos la instalación, así que solo queda: 
 
@@ -384,6 +441,46 @@ reboot
 ```
 
 Finalmente tenemos una instalación limpia...
+
+## Instalación del Xorg Server
+
+Instalamos los siguientes paquetes:
+
+```bash
+pacman -S mesa xorg xorg-apps xorg-twm
+```
+## Instalación del XFC4
+
+Instalamos los siguientes paquetes:
+
+```bash
+pacman -S xfc4 xfc4-goodies network-manager-applet pulseaudio pavucontrol
+```
+## Instalación del Gestor de Inicio (Lightdm)
+
+Instalamos los siguientes paquetes:
+
+```bash
+pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+```
+
+Iniciamos el servicio del Gestor de Inicio:
+
+```bash
+systemctl enable lightdm.service
+```
+## VMWate-Tools
+
+Nos ponemos como root e instalamos los siguientes paquetes:
+
+```bash
+pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
+```
+Luego habilitamos el servicio:
+
+```bash
+systemctl enable vmtoolsd
+```
 
 # Repositorios
 
