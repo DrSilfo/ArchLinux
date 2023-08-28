@@ -238,15 +238,10 @@ genfstab -U /mnt > /mnt/etc/fstab
 ## Instala los paquetes "recomendados"
    
 ```bash
-pacman -S dhcpd iwd net-tools ifplugd networkmanager unzip tar p7zip htop reflector xdg-utils xdg-user-dirs
+pacman -S dhcpd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
 ```
 > Paquetes adicionales: dialog os-prober mtools dosfstools   
 
-Nota: Si tuvieramos wireless instalariamos:
-
-```bash
-pacman -S iw wireless_tools wpa_supplicant wireless-regdb
-```
 ## Habilita los servicios
 
 Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
@@ -262,7 +257,7 @@ systemctl enable iwd
 ## Instala los paquetes "adicionales"
 
 ```bash
-pacman -S vim git wget curl openssh neofetch lsb-release
+pacman -S vim git wget curl openssh neofetch htop unzip p7zip lsb-release
 ```
 
 ## Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
