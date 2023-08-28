@@ -269,7 +269,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 ## Instala los paquetes "recomendados"
    
 ```bash
-pacman -S dhcp iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
+pacman -S dhcpcd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
 ```
 > Paquetes adicionales: dialog os-prober mtools dosfstools   
 
@@ -281,14 +281,14 @@ Es momento de habilitar los servicios que correrán cada que reinicies la máqui
   * Continua con el servicio de SSH
   
 ```bash
-systemctl enable dhcpd
+systemctl enable dhcpcd
 systemctl enable NetworkManager
 systemctl enable iwd
 ```
 ## Instala los paquetes "adicionales"
 
 ```bash
-pacman -S vim git wget curl openssh neofetch htop unzip p7zip lsb-release
+pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
 ```
 
 ## Configuración de tu zona horaria
@@ -296,7 +296,7 @@ pacman -S vim git wget curl openssh neofetch htop unzip p7zip lsb-release
 Primero vamos a validar la zona horaria.
 
 ```bash
-echo $( curl https://ipapi.co/timezone )
+echo $(curl https://ipapi.co/timezone)
 ```
 
 Una vez identificada la zona horaria, creamos un enlace simbolico en "/etc/localtime"
