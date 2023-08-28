@@ -80,7 +80,7 @@ Para consultar la tabla de particiones que tiene su disco duro donde va a instal
 ```bash
 root@archiso ~ # fdisk -l
 ```
-* Es importante saber cual es la ruta de nuestro almacenamiento
+* Es importante saber cual es la ruta de nuestro almacenamiento.
 * Nuestro caso es /dev/sda: 90Gib con su tabla de partición MBR (dos/msdos)
 * Los resultados que terminan en [rom, loop o airoot] pueden ignorarse.
 * En este caso /dev/loop0 es la imagen ISO de ArchLinux.
