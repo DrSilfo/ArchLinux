@@ -449,7 +449,7 @@ pacman -S mesa xorg xorg-apps xorg-twm
 Instalamos los siguientes paquetes:
 
 ```bash
-pacman -S xfc4 xfc4-goodies gvfs network-manager-applet pulseaudio pavucontrol
+pacman -S xfce4 xfce4-goodies gvfs network-manager-applet pulseaudio pavucontrol
 ```
 ## Instalación del Gestor de Inicio (Lightdm)
 
