@@ -137,7 +137,7 @@ root@archiso ~ # lsblk
 Primero revisaremos cual es el dispositivo donde se encuentra el disco que vamos a usar con el comando [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
-lsblk
+root@archiso ~ # lsblk
 ```
 
   En mi caso voy a usar el /dev/sda.
@@ -149,7 +149,7 @@ Tenemos que crear 3 particiones, una para los archivos de inicio o [boot](https:
 Continuaremos con una estructura sencilla, para crear las particiones ejecutaremos [cfdisk](https://wiki.archlinux.org/title/Fdisk):
 
 ```bash
-cfdisk
+root@archiso ~ # cfdisk
 ```
 ahí seleccionaremos la opción "dos", y luego selecionamos "New"
 
@@ -162,7 +162,7 @@ Seleccionada la última partición vamos a "Tipo" y le indicamos la opción "Lin
 Finalmente seleccionamos "Escribir" y le ponemos "yes" y validamos con [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
-lsblk
+root@archiso ~ # lsblk
 ```
 Luego salimos de la herramienta con la opción "Salir"
 
@@ -171,25 +171,25 @@ Luego salimos de la herramienta con la opción "Salir"
 Para la primera partición ejecutaremos [mkfs](https://wiki.archlinux.org/title/File_systems#Create_a_file_system):
 
 ```bash
-mkfs.vfat -F 32 /dev/sda1
+root@archiso ~ # mkfs.vfat -F 32 /dev/sda1
 ```
 
 Para la segunda partición (De archivos de sistema) ejecutaremos [mkfs](https://wiki.archlinux.org/title/File_systems#Create_a_file_system): 
 
 ```bash
-mkfs.ext4  /dev/sda2
+root@archiso ~ # mkfs.ext4  /dev/sda2
 ```
 
 Para la tercera partición (SWAP) ejecutaremos:
 
 ```bash
-mkswap  /dev/sda3
+root@archiso ~ # mkswap  /dev/sda3
 ```
 
 Para aplicar los cambios ejecutamos:
 
 ```bash
-swapon
+root@archiso ~ # swapon
 ```
 
 ## Monta las Particiones
@@ -199,24 +199,24 @@ Una vez definidas, creadas y formateadas las particiones debemos montarlas en nu
 Montamos la segunda partición en "/mnt" que es nuestro directorio para la instalación de Arch Linux:
 
 ```bash
-mount /dev/sda2 /mnt
+root@archiso ~ # mount /dev/sda2 /mnt
 ```
 
 Debemos crear el directorio donde estará nuestra partición de inicio, para eso vamos a crear un directorio en la partición previamente montada:
 ```bash
-mkdir /mnt/boot
+root@archiso ~ # mkdir /mnt/boot
 ```
 
 Montamos la primera partición en:
 
 ```bash
-mount /dev/sda1 /mnt/boot
+root@archiso ~ # mount /dev/sda1 /mnt/boot
 ```
 
 Verificamos que las particiones estén montadas correctamente utilizando [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
 
 ```bash
-lsblk
+root@archiso ~ # lsblk
 ```
 
 ## Instala los paquetes "base"
@@ -226,34 +226,34 @@ Una vez montadas las particiones comenzamos la instalación de los paquetes base
   Nota: Estamos indicando la ruta "/mnt", para la instalación
 
 ```bash
-pacstrap /mnt linux linux-firmware linux-headers base base-devel grub
+root@archiso ~ # pacstrap /mnt linux linux-firmware linux-headers base base-devel grub
 ```
 ## Crear [fstab](https://wiki.archlinux.org/title/Fstab)
 
 Este archivo contiene información del montaje de las particiones, para crearlo ejecutamos lo siguiente:
 
 ```bash
-genfstab -U /mnt > /mnt/etc/fstab
+root@archiso ~ # genfstab -U /mnt > /mnt/etc/fstab
 ```
 ## Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
 
 Listo, ya que hemos creado el archivo "fstab" y que las particiones estas correctamente configuradas, vamos a ingresar a la instalación base e iniciar con la configuración:
 
 ```bash
-arch-chroot /mnt
+root@archiso ~ # arch-chroot /mnt
 ```
 
 Instalamos el grub en el "/dev/sda".
 
 ```bash
-grub-install /dev/sda
+[root@archiso /]# grub-install /dev/sda
 ```
 
 Deshabilitar el arranque silencio del grub (Opcional):
 
 ```bash
-pacman -S vim
-vim /etc/default/grub
+[root@archiso /]# pacman -S vim
+[root@archiso /]# vim /etc/default/grub
 ```
 Eliminar la palabra "quiet", debería quedar de la siguiente manera:
 
@@ -264,12 +264,12 @@ GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
 Ahora crearemos el archivo de configuración
 
 ```bash
-grub-mkconfig -o /boot/grub/grub.cfg
+[root@archiso /]# grub-mkconfig -o /boot/grub/grub.cfg
 ```
 ## Instala los paquetes "recomendados"
    
 ```bash
-pacman -S dhcpcd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
+[root@archiso /]# pacman -S dhcpcd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
 ```
 > Paquetes adicionales: dialog os-prober mtools dosfstools   
 
@@ -281,14 +281,14 @@ Es momento de habilitar los servicios que correrán cada que reinicies la máqui
   * Continua con el servicio de SSH
   
 ```bash
-systemctl enable dhcpcd
-systemctl enable NetworkManager
-systemctl enable iwd
+[root@archiso /]# systemctl enable dhcpcd
+[root@archiso /]# systemctl enable NetworkManager
+[root@archiso /]# systemctl enable iwd
 ```
 ## Instala los paquetes "adicionales"
 
 ```bash
-pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
+[root@archiso /]# pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
 ```
 
 ## Configuración de tu zona horaria
@@ -296,23 +296,23 @@ pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
 Primero vamos a validar la zona horaria.
 
 ```bash
-echo $(curl https://ipapi.co/timezone)
+[root@archiso /]# echo $(curl https://ipapi.co/timezone)
 ```
 
 Una vez identificada la zona horaria, creamos un enlace simbolico en "/etc/localtime"
 
 ```bash
-ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
+[root@archiso /]# ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
 ```
 Definimos la zona horaria según nos defina "https://ipapi.co/timezone"
 
 ```bash
-timedatectl set-timezone America/Lima
+[root@archiso /]# timedatectl set-timezone America/Lima
 ```
 Ahora podemos sincronizar el reloj del sistema con el reloj del hardware:
 
 ```bash
-hwclock -w
+[root@archiso /]# hwclock -w
 ```
 
 ## Configurar "Localización"
@@ -326,7 +326,7 @@ En mi caso voy a utilizar "es_Pe.UTF-8" pero por ejemplo.
 Para habilitar el código de localización deseado, edita el siguiente archivo y desconecta la línea donde se encuentra el código deseado.
 
 ```bash
-vim /etc/locale.gen
+[root@archiso /]# vim /etc/locale.gen
 ```
 
   Nota: para esto eliminamos "#", que se encuentra delante de cada linea.
@@ -334,14 +334,14 @@ vim /etc/locale.gen
 Genera la localización en el sistema:
 
 ```bash
-locale-gen
+[root@archiso /]# locale-gen
 ```
 
 Ahora necesitamos crear estos dos archivos de configuración en nuesta instalación: 
 
 ```bash
-echo LANG=es_PE.UTF-8 > /etc/locale.conf
-echo KEYMAP=es > /etc/vconsole.conf
+[root@archiso /]# echo LANG=es_PE.UTF-8 > /etc/locale.conf
+[root@archiso /]# echo KEYMAP=es > /etc/vconsole.conf
 ```
 
 ## Configuración de pacman
@@ -349,7 +349,7 @@ echo KEYMAP=es > /etc/vconsole.conf
 Está configuración es opcional
 
 ```bash
-vim /etc/pacman.conf
+[root@archiso /]# vim /etc/pacman.conf
 ```
 En "Misc options, debemos quitar algunos comentarios eliminando "#", y debería quedar de la siguiente manera:
 
@@ -372,13 +372,13 @@ Crear el archivo "hostname", para darle un nombre a tu máquina:
   Ejemplo: gpmpconsulting
   
 ```bash
-echo gpmpconsulting > /etc/hostname
+[root@archiso /]# echo gpmpconsulting > /etc/hostname
 ```
 
 Abrimos el archivo "/etc/hosts"
 
 ```bash
-vim /etc/hosts
+[root@archiso /]# vim /etc/hosts
 ```
 Y agregamos:
 
@@ -391,7 +391,7 @@ Y agregamos:
 En esta paso de la instalación es entregarle una contraseña a nuestro root, como ya nos encontramos en nuestra instalación, para cambiar la contraseña escribimos:
 
 ```bash
-passwd
+[root@archiso /]# passwd
 ```
 
   Nota: En el prompt escribes la contraseña y en el siguiente vuelve a escribir la contraseña para confirmarlo.
@@ -401,12 +401,12 @@ passwd
 Podremos contar con los mejores mirror con la mejor velocidad de descargar y haciendo uso de un protocolo https.
 
 ```bash
-reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+[root@archiso /]# reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 Podriamos validar con el siguiente comando:
 
 ```bash
-cat /etc/pacman.d/mirrorlist
+[root@archiso /]# cat /etc/pacman.d/mirrorlist
 ```
 
 ## Crea el usuario
@@ -414,8 +414,8 @@ cat /etc/pacman.d/mirrorlist
 Durante todo el proceso hemos hecho uso del usuario "root", pero las buenas practicas indican que se debe tener un usuario para la tareas diarias. Creare en mi caso el usuario "drsilfo" y le asignare una contraseña como lo hicimos con el usuario "root".
 
 ```bash
-useradd -mG wheel drsilfo
-passwd drsilfo
+[root@archiso /]# useradd -mG wheel drsilfo
+[root@archiso /]# passwd drsilfo
 ```
 
 Ahora debemos darle privilegios de "sudo" y puedas ejecutar comandos como superusuario "root", debemos descomenta la linea que dice "%wheel ALL=(ALL:ALL) ALL".
@@ -423,7 +423,7 @@ Ahora debemos darle privilegios de "sudo" y puedas ejecutar comandos como superu
 Para ejecutaremos: 
 
 ```bash
-EDITOR=vim visudo
+[root@archiso /]# EDITOR=vim visudo
 ```
 
 ## Salir de la Instalación y Reinicia la Máquina
@@ -431,8 +431,8 @@ EDITOR=vim visudo
 Con esto terminamos la instalación, así que solo queda: 
 
 ```bash
-exit
-reboot
+[root@archiso /]# exit
+root@archiso ~ # reboot
 ```
 
 Finalmente tenemos una instalación limpia...
@@ -442,39 +442,39 @@ Finalmente tenemos una instalación limpia...
 Instalamos los siguientes paquetes:
 
 ```bash
-pacman -S mesa xorg xorg-apps xorg-twm
+[root@gpmpconsulting drsilfo]# pacman -S mesa xorg xorg-apps xorg-twm
 ```
 ## Instalación del XFC4
 
 Instalamos los siguientes paquetes:
 
 ```bash
-pacman -S xfce4 xfce4-goodies gvfs network-manager-applet pulseaudio pavucontrol
+[root@gpmpconsulting drsilfo]# pacman -S xfce4 xfce4-goodies gvfs network-manager-applet pulseaudio pavucontrol
 ```
 ## Instalación del Gestor de Inicio (Lightdm)
 
 Instalamos los siguientes paquetes:
 
 ```bash
-pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+[root@gpmpconsulting drsilfo]# pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 ```
 
 Iniciamos el servicio del Gestor de Inicio:
 
 ```bash
-systemctl enable lightdm.service
+[root@gpmpconsulting drsilfo]# systemctl enable lightdm.service
 ```
-## VMWate-Tools
+## VMWare-Tools
 
 Nos ponemos como root e instalamos los siguientes paquetes:
 
 ```bash
-pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
+[root@gpmpconsulting drsilfo]# pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
 ```
 Luego habilitamos el servicio:
 
 ```bash
-systemctl enable vmtoolsd
+[root@gpmpconsulting drsilfo]# systemctl enable vmtoolsd
 ```
 
 # Repositorios
