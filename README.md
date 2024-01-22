@@ -481,7 +481,7 @@ Luego habilitamos el servicio:
 
 ## Repositorios [AUR](https://aur.archlinux.org/)
 
-Instalamos el repositorio, considerar realizar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/<usuario>/repositorio"
+Instalamos el repositorio, considerar realizar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/drfilfo/repositorio"
 
 ```bash
 git clone https://aur.archlinux.org/paru-bin.git
@@ -490,7 +490,7 @@ makepkg -si
 ```
 ## Repositorios [BLACKARCH](https://blackarch.org/)
 
-Instalamos el repositorio, considerar colocar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/<usuario>/repositorio"
+Instalamos el repositorio, considerar colocar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/drsilfo/repositorio"
 
 ```bash
 mkdir blackarch
