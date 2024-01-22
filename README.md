@@ -31,16 +31,16 @@ root@archiso ~ # ping -c 3 archlinux.org
 * El parámetro -c 3 establece que se ejecute ping tres veces.
 * Por defecto en la ISO habilita el servicio de dhcpcd para el uso de red cableada.
 
-> Nota: Si has tenido problemas al hacer el ping, es probable que hayas conectado el cable Ethernet después de haber iniciado el live USB. Lo más común en esta situación es que el servicio dhcpcd no se haya iniciado correctamente. Por lo tanto, vamos a proceder a iniciar el servicio.
+*__Nota:__ Si has tenido problemas al hacer el ping, es probable que hayas conectado el cable Ethernet después de haber iniciado el live USB. Lo más común en esta situación es que el servicio dhcpcd no se haya iniciado correctamente. Por lo tanto, vamos a proceder a iniciar el servicio.*
 
 ```bash
 root@archiso ~ # systemctl start dhcpcd
 ```
-> Ahora verifique que el cable Ethernet está bien conectado y vuelva a hacer un ping.
+*Ahora verifique que el cable Ethernet está bien conectado y vuelva a hacer un ping.*
 ```bash
 root@archiso ~ # ping -c 3 archlinux.org
 ```
-> Ya debería estar recibiendo datos al hacer ping, lo que indica que ya tiene conexión a Intenet, de lo contrario reinicie y vuelva a entrar al live usb para iniciar correctamente los servicios.
+*Ya debería estar recibiendo datos al hacer ping, lo que indica que ya tiene conexión a Intenet, de lo contrario reinicie y vuelva a entrar al live usb para iniciar correctamente los servicios.*
 
 ## Configuración Inicial
 
@@ -60,77 +60,7 @@ Sincronizamos el reloj con el comando [timedatectl](https://wiki.archlinux.org/t
 ```bash
 root@archiso ~ # timedatectl set-ntp true
 ```
-> Nota: La sincronización es opcional.
-
-**Verificamos el modo de arranque**
-
-Verificamos si la placa base es compatible con **UEFI**, consultando si existe el directorio especificado y mostrando resultado con archivos existentes, caso contrario de no mostrar información ni archivos el arranque solo es compatible con **BIOS/Legacy**.
-```bash
-root@archiso ~ # ls /sys/firmware/efi/efivars
-```
-**Tabla de partición (UEFI o BIOS/Legacy)**
-
-Existen dos tablas de particiones disponibles para usar, MBR/dos o GPT
-* **MRB/dos** para tarjetas madre compatibles con BIOS/Legacy.
-* **GPT** para tarjetas madre compatibles con EFI y UEFI.
-
-> UEFI = Tabla de partición GPT. | BIOS = Tabla de partición MBR/dos.
-
-Para consultar la tabla de particiones que tiene su disco duro donde va a instalar el Sistema Operativo use el siguiente comando.
-```bash
-root@archiso ~ # fdisk -l
-```
-* Es importante saber cual es la ruta de nuestro almacenamiento.
-* Nuestro caso es /dev/sda: 90Gib con su tabla de partición MBR (dos/msdos)
-* Los resultados que terminan en [rom, loop o airoot] pueden ignorarse.
-* En este caso /dev/loop0 es la imagen ISO de ArchLinux.
-
-Si usted ve la necesidad de cambiar de una tabla de partición a otra, use una de las siguientes opciones.Tenga en cuenta que este procedimiento eliminará la información del dispositivo de almacenamiento escogido.
-
-Para convertir de MBR a GPT
-
-```bash
-root@archiso ~ # parted /dev/sda mklabel gpt
-```
-Para convertir de GTP a MBR
-
-```bash
-root@archiso ~ # parted /dev/sda mklabel msdos
-```
-
-Otra opción para consultar la tabla de particiones que tiene su disco duro
-
-```bash
-root@archiso ~ # parted -l | egrep "Model|/dev/sd|msdos|gpt"
-```
-**Disco Duro: **Primero, es importante identificar la estructura de los discos para determinar las rutas y las particiones correspondientes.
-
-Las rutas del disco pueden ser: 
-
-* /dev/sda (sdd o hdd)
-* /dev/sdb (sdd o hdd)
-* /dev/sdc (Así cambia de letra...)
-* /dev/nvme0n1 (veMMC o SD Card)
-* /dev/mmcblk0 (veMMC o SD Card)
-
-```bash
-root@archiso ~ # lsblk -Spo NAME,MODEL,SIZE
-```
-**Particiones: **Podrían ser: 
-
-* /dev/sda1
-* /dev/sda2
-* /dev/sda3
-* /dev/nvme0n1p1
-* /dev/nvme0n1p2
-* /dev/nvme0n1p3
-* /dev/mmcblk0p1
-* /dev/mmcblk0p2
-* /dev/mmcblk0p3
-
-```bash
-root@archiso ~ # lsblk
-```
+*Nota: La sincronización es opcional.*
 
 ## Crea Particiones en el Disco
 
@@ -140,11 +70,11 @@ Primero revisaremos cual es el dispositivo donde se encuentra el disco que vamos
 root@archiso ~ # lsblk
 ```
 
-  En mi caso voy a usar el /dev/sda.
+*En mi caso voy a usar el /dev/sda.*
 
 Tenemos que crear 3 particiones, una para los archivos de inicio o [boot](https://wiki.archlinux.org/title/Arch_boot_process), otra donde van a estar instalado Arch Linux, y finalmente otra para el [SWAP](https://wiki.archlinux.org/title/Swap), esta última se puede omitir en caso estes realizando esto en un entorno de "pruebas".
 
-  Nota: Como mejor practica se deberia considerar una para el "/home".
+*__Nota:__ Como mejor practica se deberia considerar una para el "/home".*
 
 Continuaremos con una estructura sencilla, para crear las particiones ejecutaremos [cfdisk](https://wiki.archlinux.org/title/Fdisk):
 
@@ -481,7 +411,7 @@ Luego habilitamos el servicio:
 
 ## Repositorios [AUR](https://aur.archlinux.org/)
 
-Instalamos el repositorio, considerar realizar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/drfilfo/repositorio"
+Instalamos el repositorio, considerar realizar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/drsilfo/repositorio"
 
 ```bash
 git clone https://aur.archlinux.org/paru-bin.git
