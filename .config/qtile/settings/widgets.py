@@ -63,7 +63,7 @@ def workspaces():
     ]
 
 
-def widget_HTB(interface='tun0', **kwargs):
+def HTB(interface='tun0', **kwargs):
     inactive_text = '0.0.0.0'
     try:
         ip_info = netifaces.ifaddresses(interface).get(netifaces.AF_INET, [])
@@ -106,7 +106,7 @@ primary_widgets = [
 
     icon(bg='color2', text=' 󰆧 '), #Icon: nf-md-cube_outline
 
-    widget_HTB(**base(bg='color2')),
+    HTB(**base(bg='color2')),
   
     powerline('color1', 'color2'),
  
