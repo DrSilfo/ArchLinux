@@ -10,10 +10,8 @@ def base(fg='text', bg='dark'):
         'background': colors[bg]
     }
 
-
 def separator():
     return widget.Sep(**base(), linewidth=0, padding=5)
-
 
 def icon(fg='text', bg='dark', fontsize=16, text="?"):
     return widget.TextBox(
@@ -23,7 +21,6 @@ def icon(fg='text', bg='dark', fontsize=16, text="?"):
         padding=3
     )
 
-
 def powerline(fg="light", bg="dark"):
     return widget.TextBox(
         **base(fg, bg),
@@ -31,7 +28,6 @@ def powerline(fg="light", bg="dark"):
         fontsize=37,
         padding=-2
     )
-
 
 def workspaces(): 
     return [
@@ -62,8 +58,7 @@ def workspaces():
         separator(),
     ]
 
-
-def HTB(interface='tun0', **kwargs):
+def interface_HTB(interface='tun0', **kwargs):
     inactive_text = '0.0.0.0'
     try:
         ip_info = netifaces.ifaddresses(interface).get(netifaces.AF_INET, [])
@@ -75,7 +70,6 @@ def HTB(interface='tun0', **kwargs):
             text=text,
             **kwargs
             )
-
 
 primary_widgets = [
     *workspaces(),
@@ -106,7 +100,7 @@ primary_widgets = [
 
     icon(bg='color2', text=' 󰆧 '), #Icon: nf-md-cube_outline
 
-    HTB(**base(bg='color2')),
+    interface_HTB(**base(bg='color2')),
   
     powerline('color1', 'color2'),
  
