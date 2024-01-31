@@ -83,6 +83,13 @@ function extractPorts(){
 	cat extractPorts.tmp; rm extractPorts.tmp
 }
 
+#Settarget HTB
+function settarget(){
+  ip_address=$1
+  machine_name=$2
+  echo "$ip_address $machine_name" > $HOME/.config/qtile/htbtarget
+}
+
 # Set 'man' colors
 function man() {
     env \
@@ -132,3 +139,7 @@ bindkey "^[[F"    end-of-line
 bindkey "^[[3~"   delete-char
 bindkey "^[[1;3C" forward-word
 bindkey "^[[1;3D" backward-word
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+source ~/powerlevel10k/powerlevel10k.zsh-theme
