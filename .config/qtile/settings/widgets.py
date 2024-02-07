@@ -1,6 +1,7 @@
 from libqtile import widget
 from .theme import colors
 import netifaces
+import subprocess
 
 # Get the icons at https://www.nerdfonts.com/cheat-sheet (you need a Nerd Font)
 
@@ -71,6 +72,14 @@ def interface_HTB(interface='tun0', **kwargs):
             **kwargs
             )
 
+def execute_target():
+    try:
+        output = subprocess.check_output(['python', '/home/jrejas/.config/qtile/settings/hackthebox_target.py']).decode("utf-8").strip()
+    except subprocess.CalledProcessError as e:
+        output = str(e)
+    return output
+
+
 primary_widgets = [
     *workspaces(),
 
@@ -106,7 +115,7 @@ primary_widgets = [
  
     icon(bg='color1', text='  '), #Icon: nf-fa-crosshairs
 
-    
+    widget.TextBox(text=execute_target(), **base(bg='color1')),
   
     powerline('dark', 'color1'),
     
