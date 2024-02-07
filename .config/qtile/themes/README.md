@@ -1,3 +1,7 @@
+A theme consists of a simple json file. You can create your own by copying this
+json object and changing values:
+
+```json
 {
     "dark": [
         "#0f101a",
@@ -48,3 +52,5 @@
         "#ffd47e"
     ]
 }
+
+```
