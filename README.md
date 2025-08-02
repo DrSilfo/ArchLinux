@@ -143,7 +143,7 @@ systemctl enable NetworkManager
 
 ### Paquetes básicos
 ```bash
-pacman -S git wget curl openssh unzip p7zip lsb-release ls-release file eog xarchiver kitty
+pacman -S git wget curl openssh unzip p7zip lsb-release file eog xarchiver kitty
 ```
 
 ### Zona horaria y reloj
