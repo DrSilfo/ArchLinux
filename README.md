@@ -190,12 +190,11 @@ sudo systemctl start vmtoolsd.service
 ```
 ---
 ### 🖥️ Login Manager (opcional)
+Hyprland funciona muy bien con greetd + tuigreet como interfaz.
 ```bash
 sudo pacman -S greetd
 sudo systemctl enable greetd
 ```
----
-Hyprland funciona muy bien con greetd + tuigreet como interfaz.
 ---
 ### 📚 Repositorios Adicionales y Herramientas de Seguridad
 AUR (Paru)
