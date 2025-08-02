@@ -237,12 +237,7 @@ echo "exec-once = kitty" > ~/.config/hypr/hyprland.conf
 ## 💠 Instalar Hyprland y dependencias
 
 ```bash
-sudo pacman -S hyprland hyprpaper xwayland waybar foot rofi wofi \
-  qt5-wayland qt6-wayland xdg-desktop-portal-hyprland \
-  polkit-gnome network-manager-applet \
-  pipewire wireplumber pavucontrol \
-  thunar thunar-volman tumbler gvfs \
-  noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
+sudo pacman -S hyprland hyprpaper xwayland waybar wofi qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-gnome network-manager-applet pipewire wireplumber pavucontrol thunar thunar-volman tumbler gvfs noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
 ```
 
 > Recomendado: instalar `paru` o `yay` para acceso a AUR:
