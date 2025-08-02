@@ -40,7 +40,7 @@ systemctl start dhcpcd
 ```
 ## 🛠️ 2. Configuración Inicial
 ```bash
-echo "es_ES.UTF-8 UTF-8" > /etc/locale.gen
+echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 export LANG=es_ES.UTF-8
 timedatectl set-ntp true
@@ -49,16 +49,16 @@ timedatectl set-ntp true
 ```bash
 lsblk
 ```
-Crear particiones con cfdisk (Type: gpt)
-- **/dev/sda1** → 512M (boot)
-- **/dev/sda2** → 81.5G (sistema)
-- **/dev/sda3** → 8G (swap)
+Crear particiones con cgdisk (Type: gpt)
+- `/dev/sda1` → 512M (boot)
+- `/dev/sda2` → 81.5G (sistema)
+- `/dev/sda3` → 8G (swap)
 Formatear particiones
 ```bash
 mkfs.vfat -F 32 /dev/sda1
 mkfs.ext4 /dev/sda2
 mkswap /dev/sda3
-swapon
+swapon /dev/sda3
 ```
 ## 📂 4. Montaje de Particiones
 ```bash
@@ -68,7 +68,7 @@ mount /dev/sda1 /mnt/boot
 ```
 ## 📥 5. Instalación del Sistema Base
 ```bash
-pacstrap /mnt base base-devel linux linux-firmware linux-headers grub
+pacstrap /mnt base base-devel linux linux-firmware linux-headers grub vim
 ```
 Crear fstab
 ```bash
@@ -95,7 +95,6 @@ pacman -S dhcpcd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-us
 ```
 Habilitar servicios
 ```bash
-systemctl enable dhcpcd
 systemctl enable NetworkManager
 systemctl enable iwd
 ```
@@ -135,7 +134,7 @@ Editar /etc/hosts:
 ```bash
 127.0.0.1   localhost
 ::1         localhost
-127.0.1.1   gpmpconsulting.localhost	gpmpconsulting
+127.0.1.1   archcat	archcat
 ```
 Contraseña del root
 ```bash
@@ -162,7 +161,11 @@ reboot
 Desde ahora, ejecutar como usuario drsilfo o como root según sea necesario.
 ## ⚙️ Requisitos previos
 ```bash
-sudo pacman -S git base-devel
+sudo pacman -S git kitty
+```
+No olvides establecer Kitty como tu terminal por defecto en Hyprland. Puedes hacerlo añadiendo en `~/.config/hypr/hyprland.conf`:
+```bash
+exec-once = kitty
 ```
 Instalar Hyprland y dependencias
 ```bash
@@ -184,8 +187,21 @@ Crear la sesión en ~/.xinitrc o configurar el inicio automático con un login m
 sudo pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
 sudo systemctl enable vmtoolsd
 ```
+Inicializar servicios
+```bash
+sudo systemctl enable vmtoolsd.service
+sudo systemctl start vmtoolsd.service
+```
 ---
-### 📚 Repositorios Adicionales
+### 🖥️ Login Manager (opcional)
+```bash
+sudo pacman -S greetd
+sudo systemctl enable greetd
+```
+---
+Hyprland funciona muy bien con greetd + tuigreet como interfaz.
+---
+### 📚 Repositorios Adicionales y Herramientas de Seguridad
 AUR (Paru)
 ```bash
 git clone https://aur.archlinux.org/paru-bin.git
