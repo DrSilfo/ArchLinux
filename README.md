@@ -34,10 +34,6 @@ loadkeys es
 ```bash
 ping -c 3 archlinux.org
 ```
-Si falla:
-```bash
-systemctl start dhcpcd
-```
 ## 🛠️ 2. Configuración Inicial
 ```bash
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
