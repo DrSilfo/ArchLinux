@@ -38,9 +38,7 @@ ping -c 3 archlinux.org
 
 ---
 
----
-
-## 💽 3. Particionado del Disco
+## 💽 2. Particionado del Disco
 
 Verificar discos:
 ```bash
@@ -53,8 +51,8 @@ lsblk
 |-------------|------------------|-------------|---------|
 | `/dev/sda1` | `/boot`          | 512 MB      | FAT32   |
 | `/dev/sda2` | `swap`           | 8 GB        | swap    |
-| `/dev/sda3` | `/`              | 30 GB       | ext4    |
-| `/dev/sda4` | `/home`          | ~61.5 GB    | ext4    |
+| `/dev/sda3` | `/`              | 50 GB       | ext4    |
+| `/dev/sda4` | `/home`          | ~41.5 GB    | ext4    |
 
 Crear particiones con:
 ```bash
@@ -76,7 +74,7 @@ mkfs.ext4 /dev/sda4
 
 ---
 
-## 📂 4. Montaje de Particiones
+## 📂 3. Montaje de Particiones
 
 ```bash
 mount /dev/sda3 /mnt
@@ -87,7 +85,7 @@ mount /dev/sda4 /mnt/home
 
 ---
 
-## 📥 5. Instalación del Sistema Base
+## 📥 4. Instalación del Sistema Base
 
 ```bash
 pacstrap /mnt base base-devel linux linux-firmware linux-headers grub vim
@@ -100,7 +98,7 @@ genfstab -U /mnt > /mnt/etc/fstab
 
 ---
 
-## 🧳 6. Chroot al sistema instalado
+## 🧳 5. Chroot al sistema instalado
 
 ```bash
 arch-chroot /mnt
@@ -108,7 +106,7 @@ arch-chroot /mnt
 
 ---
 
-## ⚙️ 7. Configuración del Sistema
+## ⚙️ 6. Configuración del Sistema
 
 ### Configuración de localización y zona horaria
 
@@ -121,48 +119,31 @@ timedatectl set-ntp true
 
 ### GRUB (para BIOS/UEFI)
 ```bash
-grub-install /dev/sda
+pacman -S efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
-
 Opcional:
 ```bash
 vim /etc/default/grub
 # Puedes ajustar GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
 ```
-
-
 ---
 
 ## ⚙️ 7. Configuración del Sistema
 
-### GRUB (para BIOS/UEFI)
-```bash
-grub-install /dev/sda
-grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-Opcional:
-```bash
-vim /etc/default/grub
-# Puedes ajustar GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
-```
-
 ### Configuración de red y servicios
 ```bash
-pacman -S dhcpcd iwd networkmanager net-tools ifplugd reflector \
-  xdg-utils xdg-user-dirs
+pacman -S networkmanager net-tools reflector xdg-utils xdg-user-dirs
 ```
-
 Habilitar servicios:
 ```bash
 systemctl enable NetworkManager
-systemctl enable iwd
 ```
 
 ### Paquetes básicos
 ```bash
-pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
+pacman -S git wget curl openssh unzip p7zip lsb-release ls-release file eog xarchiver kitty
 ```
 
 ### Zona horaria y reloj
@@ -191,7 +172,6 @@ vim /etc/pacman.conf
 # ParallelDownloads = 5
 # ILoveCandy
 ```
-
 ---
 
 ## 🌐 8. Hostname y red
@@ -246,13 +226,7 @@ reboot
 
 # 🧑‍💻 Preparación del Entorno Gráfico
 
-Una vez hayas iniciado sesión como el usuario no-root (ej. `drsilfo`), instala un emulador de terminal funcional antes de lanzar Hyprland:
-
-```bash
-sudo pacman -S git kitty
-```
-
-Crea la configuración de Hyprland e indica que se ejecute `kitty` al inicio de la sesión gráfica:
+Una vez hayas iniciado sesión como el usuario no-root (ej. `drsilfo`), de terminal funcional antes de lanzar Hyprland, crea la configuración de Hyprland e indica que se ejecute `kitty` al inicio de la sesión gráfica:
 
 ```bash
 mkdir -p ~/.config/hypr
@@ -285,7 +259,7 @@ makepkg -si
 
 Inicia Hyprland automáticamente en tty1:
 ```bash
-[[ "$(tty)" = "/dev/tty1" ]] && exec Hyprland
+echo 'if [[ -z $DISPLAY && $(tty) = /dev/tty1 ]]; then exec Hyprland; fi' >> ~/.bash_profile
 ```
 
 ---
@@ -305,6 +279,15 @@ Recomendado: greetd + tuigreet
 ```bash
 sudo pacman -S greetd
 sudo systemctl enable greetd
+```
+Requiere archivo de configuración:
+```bash
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --cmd Hyprland"
+user = "drsilfo"
 ```
 
 ---
