@@ -73,7 +73,7 @@ mkfs.ext4 /dev/sda3
 
 ```bash
 mount /dev/sda3 /mnt
-mkdir -p /mnt/boot
+mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 ```
 
