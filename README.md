@@ -16,8 +16,8 @@ Instalar **Arch Linux** desde cero en una máquina virtual **VMware**, configura
 
 ## 📦 Requisitos de la Máquina Virtual
 
-- **Disco duro:** 90 GB
-- **Memoria RAM:** 4 GB
+- **Disco duro:** 100 GB
+- **Memoria RAM:** 2 GB
 - **Procesadores:** 2 núcleos
 - **Red:** Conexión por cable (preferido)
 
@@ -45,22 +45,37 @@ timedatectl set-ntp true
 ```bash
 lsblk
 ```
-Crear particiones con cgdisk (Type: gpt)
-- `/dev/sda1` → 512M (boot)
-- `/dev/sda2` → 81.5G (sistema)
-- `/dev/sda3` → 8G (swap)
-Formatear particiones
+📐 Distribución de Particiones sugerida (100 GB):
+
+| Partición   | Punto de montaje | Tamaño          | Tipo FS |
+| ----------- | ---------------- | --------------- | ------- |
+| `/dev/sda1` | `/boot`          | 512 MB          | FAT32   |
+| `/dev/sda2` | `swap`           | 8 GB            | swap    |
+| `/dev/sda3` | `/`              | 30 GB           | ext4    |
+| `/dev/sda4` | `/home`          | Resto (\~61 GB) | ext4    |
+
+Usa cgdisk /dev/sda para crear las particiones:
+
+- sda1 → Tipo: EF00 (EFI System)
+- sda2 → Tipo: 8200 (Linux Swap)
+- sda3 → Tipo: 8300 (Linux Filesystem)
+- sda4 → Tipo: 8300
+
+##🧹 Formatear particiones y activar swap:
 ```bash
-mkfs.vfat -F 32 /dev/sda1
-mkfs.ext4 /dev/sda2
-mkswap /dev/sda3
-swapon /dev/sda3
+mkfs.fat -F32 /dev/sda1
+mkswap /dev/sda2
+swapon /dev/sda2
+mkfs.ext4 /dev/sda3
+mkfs.ext4 /dev/sda4
 ```
 ## 📂 4. Montaje de Particiones
 ```bash
-mount /dev/sda2 /mnt
+mount /dev/sda3 /mnt               # Monta la raíz
 mkdir /mnt/boot
-mount /dev/sda1 /mnt/boot
+mount /dev/sda1 /mnt/boot          # Monta EFI
+mkdir /mnt/home
+mount /dev/sda4 /mnt/home          # Monta /home
 ```
 ## 📥 5. Instalación del Sistema Base
 ```bash
