@@ -60,6 +60,12 @@ cfdisk /dev/sda
 ```
 Nota: Selecciona dos
 
+Ejecuta este comando para borrar por completo la tabla de particiones GPT y crear una nueva MBR:
+
+```bash
+wipefs -a /dev/sda
+```
+
 ### 🧹 Formatear y activar particiones
 ```bash
 mkfs.ext4 /dev/sda1
