@@ -1,431 +1,202 @@
-# Arch Linux
+# 🐧 Guía de Instalación de Arch Linux en VMware con Hyprland
 
-[Página Oficial](https://www.archlinux-es.org/), puedes [descargar](https://www.archlinux-es.org/descargar/) la iSO y por medio de la comunidad contar con un soporte.
+## 🌐 Enlaces Útiles
 
-# Objetivo
+- [Sitio Oficial Arch Linux](https://www.archlinux-es.org/)
+- [Descarga de la ISO](https://www.archlinux-es.org/descargar/)
+- [Wiki Oficial de Arch Linux](https://wiki.archlinux.org/)
 
-Crear una guía que recopile todos los pasos necesarios para construir un entorno de escritorio a partir de una instalación limpia basada en la distribución de Arch Linux.
+---
 
-# Instalación de Arch Linux
+## 🎯 Objetivo
 
-## Configuración Maquina Virtual
+Instalar **Arch Linux** desde cero en una máquina virtual **VMware**, configurando un entorno moderno con **Hyprland**, servicios esenciales, usuario no-root y soporte para VMware.
 
-* Tamaño en disco de 90 GB
-* Tamaño de memoría 4GB
-* Cantidad de Procesadores 2
+---
 
-## Pre-Instalación
+## 📦 Requisitos de la Máquina Virtual
 
-Para lograr el reconocimiento de todos los caracteres, es necesario configurar una distribución temporal del teclado de manera adecuada.
+- **Disco duro:** 90 GB
+- **Memoria RAM:** 4 GB
+- **Procesadores:** 2 núcleos
+- **Red:** Conexión por cable (preferido)
 
-Iniciamos cambiando el teclado que por defecto viene en Inglés a Español, con el comando [loadkeys](https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration#Loadkeys):
+---
+
+## 🧩 1. Pre-Instalación
+
+### ⌨️ Configurar teclado a Español
 
 ```bash
-root@archiso ~ # loadkeys es
+loadkeys es
 ```
-Se recomienda utilizar la conexión por cable en lugar de la conexión inalámbrica, ya que proporciona una mayor estabilidad y velocidad a tu conexión a Internet. Para establecer una conexión por cable, simplemente necesitas conectar el cable Ethernet. Después, puedes hacer un ping para verificar la conexión a Internet.
-
+### 🌐 Verificar conexión a Internet
 ```bash
-root@archiso ~ # ping -c 3 archlinux.org
+ping -c 3 archlinux.org
 ```
-* El parámetro -c 3 establece que se ejecute ping tres veces.
-* Por defecto en la ISO habilita el servicio de dhcpcd para el uso de red cableada.
-
-*__Nota:__ Si has tenido problemas al hacer el ping, es probable que hayas conectado el cable Ethernet después de haber iniciado el live USB. Lo más común en esta situación es que el servicio dhcpcd no se haya iniciado correctamente. Por lo tanto, vamos a proceder a iniciar el servicio.*
-
+Si falla:
 ```bash
-root@archiso ~ # systemctl start dhcpcd
+systemctl start dhcpcd
 ```
-*Ahora verifique que el cable Ethernet está bien conectado y vuelva a hacer un ping.*
+## 🛠️ 2. Configuración Inicial
 ```bash
-root@archiso ~ # ping -c 3 archlinux.org
+echo "es_ES.UTF-8 UTF-8" > /etc/locale.gen
+locale-gen
+export LANG=es_ES.UTF-8
+timedatectl set-ntp true
 ```
-*Ya debería estar recibiendo datos al hacer ping, lo que indica que ya tiene conexión a Intenet, de lo contrario reinicie y vuelva a entrar al live usb para iniciar correctamente los servicios.*
-
-## Configuración Inicial
-
-Vamos a configurar el idioma temporal de las herramientas disponibles a nuestro idioma español, sobre todo las de particionado.
+## 💽 3. Particionado del Disco
 ```bash
-root@archiso ~ # echo "es_ES.UTF-8 UTF-8" > /etc/locale.gen
+lsblk
 ```
-Ahora vamos a generar la configuración regional.
+Crear particiones con cfdisk (Type: gpt)
+- **/dev/sda1** → 512M (boot)
+- **/dev/sda2** → 81.5G (sistema)
+- **/dev/sda3** → 8G (swap)
+Formatear particiones
 ```bash
-root@archiso ~ # locale-gen
+mkfs.vfat -F 32 /dev/sda1
+mkfs.ext4 /dev/sda2
+mkswap /dev/sda3
+swapon /dev/sda3
 ```
-Exportamos la variable LANG para finalizar la configuración regional temporal.
+## 📂 4. Montaje de Particiones
 ```bash
-root@archiso ~ # export LANG=es_ES.UTF-8
+mount /dev/sda2 /mnt
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
 ```
-Sincronizamos el reloj con el comando [timedatectl](https://wiki.archlinux.org/title/System_time):
+## 📥 5. Instalación del Sistema Base
 ```bash
-root@archiso ~ # timedatectl set-ntp true
+pacstrap /mnt base base-devel linux linux-firmware linux-headers grub
 ```
-*Nota: La sincronización es opcional.*
-
-## Crea Particiones en el Disco
-
-Primero revisaremos cual es el dispositivo donde se encuentra el disco que vamos a usar con el comando [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
-
+Crear fstab
 ```bash
-root@archiso ~ # lsblk
+genfstab -U /mnt > /mnt/etc/fstab
 ```
-
-*En mi caso voy a usar el /dev/sda.*
-
-Tenemos que crear 3 particiones, una para los archivos de inicio o [boot](https://wiki.archlinux.org/title/Arch_boot_process), otra donde van a estar instalado Arch Linux, y finalmente otra para el [SWAP](https://wiki.archlinux.org/title/Swap), esta última se puede omitir en caso estes realizando esto en un entorno de "pruebas".
-
-*__Nota:__ Como mejor practica se deberia considerar una para el "/home".*
-
-Continuaremos con una estructura sencilla, para crear las particiones ejecutaremos [cfdisk](https://wiki.archlinux.org/title/Fdisk):
-
+## 🧳 6. Ingresar al sistema instalado
 ```bash
-root@archiso ~ # cfdisk
+arch-chroot /mnt
 ```
-ahí seleccionaremos la opción "dos", y luego selecionamos "New"
-
-* Creamos la 1° partición y le asignamos un tamaño de 512M
-* Creamos la 2° partición y le asignamos un tamaño de 81,5G
-* Creamos la 3° partición y le asignamos un tamaño de 8G
-
-Seleccionada la última partición vamos a "Tipo" y le indicamos la opción "Linux swap".
-
-Finalmente seleccionamos "Escribir" y le ponemos "yes" y validamos con [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
-
+## ⚙️ 7. Configuración del Sistema
+Instalar y configurar GRUB
 ```bash
-root@archiso ~ # lsblk
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
 ```
-Luego salimos de la herramienta con la opción "Salir"
-
-## Formatea las Particiones
-
-Para la primera partición ejecutaremos [mkfs](https://wiki.archlinux.org/title/File_systems#Create_a_file_system):
-
+Opcional:
 ```bash
-root@archiso ~ # mkfs.vfat -F 32 /dev/sda1
+vim /etc/default/grub
+# GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
 ```
-
-Para la segunda partición (De archivos de sistema) ejecutaremos [mkfs](https://wiki.archlinux.org/title/File_systems#Create_a_file_system): 
-
+Instalar paquete de red
 ```bash
-root@archiso ~ # mkfs.ext4  /dev/sda2
+pacman -S dhcpcd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
 ```
-
-Para la tercera partición (SWAP) ejecutaremos:
-
+Habilitar servicios
 ```bash
-root@archiso ~ # mkswap  /dev/sda3
+systemctl enable dhcpcd
+systemctl enable NetworkManager
+systemctl enable iwd
 ```
-
-Para aplicar los cambios ejecutamos:
-
+Paquetes adicionales
 ```bash
-root@archiso ~ # swapon
+pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
 ```
-
-## Monta las Particiones
-
-Una vez definidas, creadas y formateadas las particiones debemos montarlas en nuestro sistema.
-
-Montamos la segunda partición en "/mnt" que es nuestro directorio para la instalación de Arch Linux:
-
+Configurar zona horaria
 ```bash
-root@archiso ~ # mount /dev/sda2 /mnt
+ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
+timedatectl set-timezone America/Lima
+hwclock -w
 ```
-
-Debemos crear el directorio donde estará nuestra partición de inicio, para eso vamos a crear un directorio en la partición previamente montada:
+Localización
 ```bash
-root@archiso ~ # mkdir /mnt/boot
+vim /etc/locale.gen
+# Descomenta es_PE.UTF-8
+locale-gen
+echo LANG=es_PE.UTF-8 > /etc/locale.conf
+echo KEYMAP=es > /etc/vconsole.conf
 ```
-
-Montamos la primera partición en:
-
+Configuración de Pacman (Opcional)
 ```bash
-root@archiso ~ # mount /dev/sda1 /mnt/boot
-```
-
-Verificamos que las particiones estén montadas correctamente utilizando [lsblk](https://wiki.archlinux.org/title/Device_file#lsblk):
-
-```bash
-root@archiso ~ # lsblk
-```
-
-## Instala los paquetes "base"
-
-Una vez montadas las particiones comenzamos la instalación de los paquetes base:
-
-  Nota: Estamos indicando la ruta "/mnt", para la instalación
-
-```bash
-root@archiso ~ # pacstrap /mnt linux linux-firmware linux-headers base base-devel grub
-```
-## Crear [fstab](https://wiki.archlinux.org/title/Fstab)
-
-Este archivo contiene información del montaje de las particiones, para crearlo ejecutamos lo siguiente:
-
-```bash
-root@archiso ~ # genfstab -U /mnt > /mnt/etc/fstab
-```
-## Instalar el [GRUB](https://wiki.archlinux.org/title/GRUB)
-
-Listo, ya que hemos creado el archivo "fstab" y que las particiones estas correctamente configuradas, vamos a ingresar a la instalación base e iniciar con la configuración:
-
-```bash
-root@archiso ~ # arch-chroot /mnt
-```
-
-Instalamos el grub en el "/dev/sda".
-
-```bash
-[root@archiso /]# grub-install /dev/sda
-```
-
-Deshabilitar el arranque silencio del grub (Opcional):
-
-```bash
-[root@archiso /]# pacman -S vim
-[root@archiso /]# vim /etc/default/grub
-```
-Eliminar la palabra "quiet", debería quedar de la siguiente manera:
-
-```bash
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
-```
-
-Ahora crearemos el archivo de configuración
-
-```bash
-[root@archiso /]# grub-mkconfig -o /boot/grub/grub.cfg
-```
-## Instala los paquetes "recomendados"
-   
-```bash
-[root@archiso /]# pacman -S dhcpcd iwd net-tools ifplugd networkmanager reflector xdg-utils xdg-user-dirs
-```
-> Paquetes adicionales: dialog os-prober mtools dosfstools   
-
-## Habilita los servicios
-
-Es momento de habilitar los servicios que correrán cada que reinicies la máquina.
-
-  * Habilita el manejador de la red.
-  * Continua con el servicio de SSH
-  
-```bash
-[root@archiso /]# systemctl enable dhcpcd
-[root@archiso /]# systemctl enable NetworkManager
-[root@archiso /]# systemctl enable iwd
-```
-## Instala los paquetes "adicionales"
-
-```bash
-[root@archiso /]# pacman -S git wget curl openssh neofetch htop unzip p7zip lsb-release
-```
-
-## Configuración de tu zona horaria
-
-Primero vamos a validar la zona horaria.
-
-```bash
-[root@archiso /]# echo $(curl https://ipapi.co/timezone)
-```
-
-Una vez identificada la zona horaria, creamos un enlace simbolico en "/etc/localtime"
-
-```bash
-[root@archiso /]# ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
-```
-Definimos la zona horaria según nos defina "https://ipapi.co/timezone"
-
-```bash
-[root@archiso /]# timedatectl set-timezone America/Lima
-```
-Ahora podemos sincronizar el reloj del sistema con el reloj del hardware:
-
-```bash
-[root@archiso /]# hwclock -w
-```
-
-## Configurar "Localización"
-
-Esto es para indicarle a Arh Linux donde nos ubicamos y cual es el grupo de caracteres que corresponden a tu idioma.
-
-En mi caso voy a utilizar "es_Pe.UTF-8" pero por ejemplo.
-
-  Nota: Puedes habilitar más de un código de localización.
-  
-Para habilitar el código de localización deseado, edita el siguiente archivo y desconecta la línea donde se encuentra el código deseado.
-
-```bash
-[root@archiso /]# vim /etc/locale.gen
-```
-
-  Nota: para esto eliminamos "#", que se encuentra delante de cada linea.
-
-Genera la localización en el sistema:
-
-```bash
-[root@archiso /]# locale-gen
-```
-
-Ahora necesitamos crear estos dos archivos de configuración en nuesta instalación: 
-
-```bash
-[root@archiso /]# echo LANG=es_PE.UTF-8 > /etc/locale.conf
-[root@archiso /]# echo KEYMAP=es > /etc/vconsole.conf
-```
-
-## Configuración de pacman
-
-Está configuración es opcional
-
-```bash
-[root@archiso /]# vim /etc/pacman.conf
-```
-En "Misc options, debemos quitar algunos comentarios eliminando "#", y debería quedar de la siguiente manera:
-
-```bash
-#Misc Options
-#UseSysLog
+vim /etc/pacman.conf
+# Activar:
 Color
-#NoProgressBar
 CheckSpace
 VerbosePkgLists
 ParallelDownloads = 5
 ILoveCandy
 ```
-Guardamos el archivo.
-
-## Configura la Red
-
-Crear el archivo "hostname", para darle un nombre a tu máquina:
-
-  Ejemplo: gpmpconsulting
-  
+## 🌐 8. Configurar red y hostname
 ```bash
-[root@archiso /]# echo gpmpconsulting > /etc/hostname
+echo archcat > /etc/hostname
 ```
-
-Abrimos el archivo "/etc/hosts"
-
+Editar /etc/hosts:
 ```bash
-[root@archiso /]# vim /etc/hosts
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   gpmpconsulting.localhost	gpmpconsulting
 ```
-Y agregamos:
-
+Contraseña del root
 ```bash
-127.0.0.1  localhost
-::1        localhost
-127.0.1.1  gpmpconsulting.localhost	gpmpconsulting
+passwd
 ```
-
-En esta paso de la instalación es entregarle una contraseña a nuestro root, como ya nos encontramos en nuestra instalación, para cambiar la contraseña escribimos:
-
+## 🌍 9. Configurar Mirrorlist
 ```bash
-[root@archiso /]# passwd
+reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 ```
-
-  Nota: En el prompt escribes la contraseña y en el siguiente vuelve a escribir la contraseña para confirmarlo.
-  
- ## Configurar las mirror con Reflector
-
-Podremos contar con los mejores mirror con la mejor velocidad de descargar y haciendo uso de un protocolo https.
-
+## 👤 10. Crear usuario
 ```bash
-[root@archiso /]# reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+useradd -mG wheel drsilfo
+passwd drsilfo
+EDITOR=vim visudo
+# Descomenta: %wheel ALL=(ALL:ALL) ALL
 ```
-Podriamos validar con el siguiente comando:
-
+## 🔁 11. Salir y reiniciar
 ```bash
-[root@archiso /]# cat /etc/pacman.d/mirrorlist
+exit
+reboot
 ```
-
-## Crea el usuario
-
-Durante todo el proceso hemos hecho uso del usuario "root", pero las buenas practicas indican que se debe tener un usuario para la tareas diarias. Creare en mi caso el usuario "drsilfo" y le asignare una contraseña como lo hicimos con el usuario "root".
-
+---
+### 🎨 Instalación de Hyprland (Wayland)
+Desde ahora, ejecutar como usuario drsilfo o como root según sea necesario.
+## ⚙️ Requisitos previos
 ```bash
-[root@archiso /]# useradd -mG wheel drsilfo
-[root@archiso /]# passwd drsilfo
+sudo pacman -S git base-devel
 ```
-
-Ahora debemos darle privilegios de "sudo" y puedas ejecutar comandos como superusuario "root", debemos descomenta la linea que dice "%wheel ALL=(ALL:ALL) ALL".
-
-Para ejecutaremos: 
-
+Instalar Hyprland y dependencias
 ```bash
-[root@archiso /]# EDITOR=vim visudo
+sudo pacman -S hyprland hyprpaper xwayland waybar foot rofi wofi \
+    qt5-wayland qt6-wayland xdg-desktop-portal-hyprland \
+    polkit-gnome network-manager-applet \
+    pipewire wireplumber pavucontrol \
+    thunar thunar-volman tumbler gvfs \
+    noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
 ```
-
-## Salir de la Instalación y Reinicia la Máquina
-
-Con esto terminamos la instalación, así que solo queda: 
-
+Puedes usar paru o yay para instalar paquetes desde AUR si deseas personalizaciones adicionales como hyprlock, hypridle, etc.
+## 🖼️ Configurar entorno gráfico
+Crear la sesión en ~/.xinitrc o configurar el inicio automático con un login manager (ej: greetd o SDDM si usas Wayland-compatible).
 ```bash
-[root@archiso /]# exit
-root@archiso ~ # reboot
+[[ "$(tty)" = "/dev/tty1" ]] && exec Hyprland
 ```
-
-Finalmente tenemos una instalación limpia...
-
-## Instalación del Xorg Server
-
-Instalamos los siguientes paquetes:
-
+## 💻 Integración con VMware
 ```bash
-[root@gpmpconsulting drsilfo]# pacman -S mesa xorg xorg-apps xorg-twm
+sudo pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
+sudo systemctl enable vmtoolsd
 ```
-## Instalación del XFC4
-
-Instalamos los siguientes paquetes:
-
-```bash
-[root@gpmpconsulting drsilfo]# pacman -S xfce4 xfce4-goodies gvfs network-manager-applet pulseaudio pavucontrol
-```
-## Instalación del Gestor de Inicio (Lightdm)
-
-Instalamos los siguientes paquetes:
-
-```bash
-[root@gpmpconsulting drsilfo]# pacman -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
-```
-
-Iniciamos el servicio del Gestor de Inicio:
-
-```bash
-[root@gpmpconsulting drsilfo]# systemctl enable lightdm.service
-```
-## VMWare-Tools
-
-Nos ponemos como root e instalamos los siguientes paquetes:
-
-```bash
-[root@gpmpconsulting drsilfo]# pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
-```
-Luego habilitamos el servicio:
-
-```bash
-[root@gpmpconsulting drsilfo]# systemctl enable vmtoolsd
-```
-
-# Repositorios
-
-## Repositorios [AUR](https://aur.archlinux.org/)
-
-Instalamos el repositorio, considerar realizar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/drsilfo/repositorio"
-
+---
+### 📚 Repositorios Adicionales
+AUR (Paru)
 ```bash
 git clone https://aur.archlinux.org/paru-bin.git
 cd paru-bin/
 makepkg -si
 ```
-## Repositorios [BLACKARCH](https://blackarch.org/)
-
-Instalamos el repositorio, considerar colocar la descarga en una caperta "repositorios" está debe encontrarse en el directorio del usuario ejm: "/home/drsilfo/repositorio"
-
+BlackArch
 ```bash
-mkdir blackarch
+mkdir ~/repositorio/blackarch
+cd ~/repositorio/blackarch
 curl -O https://blackarch.org/strap.sh
 chmod +x strap.sh
-sudo su
-./strap.sh
+sudo ./strap.sh
 ```
