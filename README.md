@@ -47,29 +47,24 @@ lsblk
 
 **Distribución sugerida (100 GB):**
 
-| Partición   | Punto de Montaje | Tamaño      | Tipo FS |
-|-------------|------------------|-------------|---------|
-| `/dev/sda1` | `/boot`          | 512 MB      | FAT32   |
-| `/dev/sda2` | `swap`           | 8 GB        | swap    |
-| `/dev/sda3` | `/`              | 50 GB       | ext4    |
-| `/dev/sda4` | `/home`          | ~41.5 GB    | ext4    |
+| Partición   | Punto de Montaje | Tamaño  | Tipo FS | Tipo Partición |
+| ----------- | ---------------- | ------- | ------- | -------------- |
+| `/dev/sda1` | `/boot`          | 512 MB  | ext4    | Linux          |
+| `/dev/sda2` | `swap`           | 8 GB    | swap    | Linux swap     |
+| `/dev/sda3` | `/`              | 91.5 GB | ext4    | Linux          |
+
 
 Crear particiones con:
 ```bash
-cgdisk /dev/sda
+cfdisk /dev/sda
 ```
-
-- `sda1` → Tipo: `EF00` (EFI System)
-- `sda2` → Tipo: `8200` (Linux Swap)
-- `sda3` y `sda4` → Tipo: `8300` (Linux Filesystem)
 
 ### 🧹 Formatear y activar particiones
 ```bash
-mkfs.fat -F32 /dev/sda1
+mkfs.ext4 /dev/sda1
 mkswap /dev/sda2
 swapon /dev/sda2
 mkfs.ext4 /dev/sda3
-mkfs.ext4 /dev/sda4
 ```
 
 ---
@@ -78,9 +73,8 @@ mkfs.ext4 /dev/sda4
 
 ```bash
 mount /dev/sda3 /mnt
-mkdir -p /mnt/boot /mnt/home
+mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
-mount /dev/sda4 /mnt/home
 ```
 
 ---
@@ -119,8 +113,7 @@ timedatectl set-ntp true
 
 ### GRUB (para BIOS/UEFI)
 ```bash
-pacman -S efibootmgr
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-install --target=i386-pc /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 Opcional:
