@@ -58,7 +58,7 @@ Formatear particiones
 mkfs.vfat -F 32 /dev/sda1
 mkfs.ext4 /dev/sda2
 mkswap /dev/sda3
-swapon /dev/sda3
+swapon
 ```
 ## 📂 4. Montaje de Particiones
 ```bash
