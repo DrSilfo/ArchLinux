@@ -58,6 +58,7 @@ Crear particiones con:
 ```bash
 cfdisk /dev/sda
 ```
+Nota: Selecciona dos
 
 ### 🧹 Formatear y activar particiones
 ```bash
