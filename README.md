@@ -266,7 +266,7 @@ echo 'if [[ -z $DISPLAY && $(tty) = /dev/tty1 ]]; then exec Hyprland; fi' >> ~/.
 ## 🖥️ Integración con VMware
 
 ```bash
-sudo pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
+paru -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
 sudo systemctl enable --now vmtoolsd.service
 ```
 
