@@ -165,7 +165,7 @@ echo KEYMAP=es > /etc/vconsole.conf
 ### Configuración opcional de `pacman`
 ```bash
 vim /etc/pacman.conf
-# Activar:
+Activar:
 # Color
 # CheckSpace
 # VerbosePkgLists
@@ -218,7 +218,6 @@ reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.
 
 ```bash
 exit
-umount -R /mnt
 reboot
 ```
 
