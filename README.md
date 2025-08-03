@@ -237,16 +237,8 @@ echo "exec-once = kitty" > ~/.config/hypr/hyprland.conf
 ## 💠 Instalar Hyprland y dependencias
 
 ```bash
-sudo pacman -S hyprland hyprpaper xwayland waybar wofi qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-gnome network-manager-applet pipewire wireplumber pavucontrol thunar thunar-volman tumbler gvfs noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
+sudo pacman -S hyprland hyprpaper xorg-xwayland waybar wofi qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-gnome network-manager-applet pipewire wireplumber pavucontrol thunar thunar-volman tumbler gvfs noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
 ```
-
-> Recomendado: instalar `paru` o `yay` para acceso a AUR:
-```bash
-git clone https://aur.archlinux.org/paru-bin.git
-cd paru-bin
-makepkg -si
-```
-
 ---
 
 ## 🖼️ Configuración de entorno gráfico
@@ -274,7 +266,7 @@ Recomendado: greetd + tuigreet
 sudo pacman -S greetd
 sudo systemctl enable greetd
 ```
-Requiere archivo de configuración:
+Requiere archivo de configuración ´/etc/greetd/config.toml´ :
 ```bash
 [terminal]
 vt = 1
