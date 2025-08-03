@@ -220,17 +220,15 @@ reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.
 exit
 reboot
 ```
-
 ---
 
-# 🧑‍💻 Preparación del Entorno Gráfico
-
-Una vez hayas iniciado sesión como el usuario no-root (ej. `drsilfo`), de terminal funcional antes de lanzar Hyprland, crea la configuración de Hyprland e indica que se ejecute `kitty` al inicio de la sesión gráfica:
+## 🖥️ Integración con VMware
 
 ```bash
-mkdir -p ~/.config/hypr
-echo "exec-once = kitty" > ~/.config/hypr/hyprland.conf
+paru -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
+sudo systemctl enable --now vmtoolsd.service
 ```
+---
 
 ---
 
@@ -240,23 +238,14 @@ echo "exec-once = kitty" > ~/.config/hypr/hyprland.conf
 sudo pacman -S hyprland hyprpaper xorg-xwayland waybar wofi qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-gnome network-manager-applet pipewire wireplumber pavucontrol thunar thunar-volman tumbler gvfs noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
 ```
 ---
+# 🧑‍💻 Preparación del Entorno Gráfico
 
-## 🖼️ Configuración de entorno gráfico
-
-Inicia Hyprland automáticamente en tty1:
-```bash
-echo 'if [[ -z $DISPLAY && $(tty) = /dev/tty1 ]]; then exec Hyprland; fi' >> ~/.bash_profile
-```
-
----
-
-## 🖥️ Integración con VMware
+Una vez hayas iniciado sesión como el usuario no-root (ej. `drsilfo`), de terminal funcional antes de lanzar Hyprland, crea la configuración de Hyprland e indica que se ejecute `kitty` al inicio de la sesión gráfica:
 
 ```bash
-paru -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
-sudo systemctl enable --now vmtoolsd.service
+mkdir -p ~/.config/hypr
+echo "exec-once = kitty" > ~/.config/hypr/hyprland.conf
 ```
-
 ---
 
 ## 🔐 Login Manager (opcional)
@@ -267,7 +256,8 @@ sudo pacman -S greetd
 yay -S greetd-tuigreet
 sudo systemctl enable greetd
 ```
-Requiere archivo de configuración ´/etc/greetd/config.toml´ :
+Nota: Requiete tener instalar yay
+Configuración de archivo ´/etc/greetd/config.toml´ :
 ```bash
 [terminal]
 vt = 1
@@ -276,7 +266,10 @@ vt = 1
 command = "tuigreet --cmd Hyprland"
 user = "drsilfo"
 ```
-
+Reinicia el sistema
+```bash
+reboot
+```
 ---
 
 ## 🛡️ Repositorios adicionales (opcional)
