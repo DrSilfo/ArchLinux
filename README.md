@@ -264,6 +264,7 @@ sudo systemctl enable --now vmtoolsd.service
 Recomendado: greetd + tuigreet
 ```bash
 sudo pacman -S greetd
+yay -S tuigreet
 sudo systemctl enable greetd
 ```
 Requiere archivo de configuración ´/etc/greetd/config.toml´ :
@@ -294,6 +295,13 @@ cd ~/repositorio/blackarch
 curl -O https://blackarch.org/strap.sh
 chmod +x strap.sh
 sudo ./strap.sh
+```
+### YAY 
+```bash
+sudo pacman -S --needed base-devel git
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
 ```
 
 ---
