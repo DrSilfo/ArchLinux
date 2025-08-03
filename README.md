@@ -230,8 +230,6 @@ sudo systemctl enable --now vmtoolsd.service
 ```
 ---
 
----
-
 ## 💠 Instalar Hyprland y dependencias
 
 ```bash
