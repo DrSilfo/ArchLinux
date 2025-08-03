@@ -264,7 +264,7 @@ sudo systemctl enable --now vmtoolsd.service
 Recomendado: greetd + tuigreet
 ```bash
 sudo pacman -S greetd
-yay -S tuigreet
+yay -S greetd-tuigreet
 sudo systemctl enable greetd
 ```
 Requiere archivo de configuración ´/etc/greetd/config.toml´ :
