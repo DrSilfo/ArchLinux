@@ -1,72 +1,81 @@
-
 # 🐧 Guía de Instalación de Arch Linux con Hyprland en VMware (Intel)
+
+---
 
 ## 🌐 Enlaces Útiles
 
 - [Sitio Oficial de Arch Linux (ES)](https://www.archlinux-es.org/)
 - [Descarga ISO Arch Linux](https://www.archlinux-es.org/descargar/)
 - [Wiki Oficial Arch Linux](https://wiki.archlinux.org/)
+- [Guía Oficial Hyprland - Tutorial Maestro](https://wiki.hypr.land/Getting-Started/Master-Tutorial/)
+- [Instalación Oficial de Hyprland](https://wiki.hypr.land/Getting-Started/Installation/)
+- [Ecosistema Hypr](https://wiki.hypr.land/Hypr-Ecosystem/)
 
 ---
 
 ## 🎯 Objetivo
 
-Instalar **Arch Linux** desde cero en una máquina virtual **VMware**, con un entorno gráfico moderno basado en **Hyprland** (Wayland), un usuario no-root, y soporte completo para integración con VMware.
+Instalar **Arch Linux** desde cero en una máquina virtual **VMware**, configurando un entorno gráfico moderno basado en **Hyprland** sobre **Wayland**, con:
+
+- Un usuario no-root funcional.
+- Integración completa con VMware Tools.
+- Aplicaciones básicas como el emulador de terminal **Kitty**.
+- Base para un entorno estético, funcional y altamente personalizable.
 
 ---
 
 ## 💻 Requisitos de la Máquina Virtual
 
 - **Disco duro:** 100 GB
-- **Memoria RAM:** 2 GB (mínimo), 4 GB recomendado
+- **Memoria RAM:** 4 GB (2 GB mínimo)
 - **Procesadores:** 2 núcleos
-- **Conectividad:** Preferentemente por cable (bridge o NAT)
+- **Red:** Bridge o NAT (preferentemente cableada)
 
 ---
 
-## 🧩 1. Preinstalación
+## 🧬 1. Preinstalación
 
 ### ⌨️ Configurar teclado en español
+
 ```bash
 loadkeys es
 ```
 
 ### 🌐 Verificar conexión a Internet
+
 ```bash
 ping -c 3 archlinux.org
 ```
 
 ---
 
-## 💽 2. Particionado del Disco
+## 📀 2. Particionado del Disco
 
-Verificar discos:
+### Verificar discos disponibles:
+
 ```bash
 lsblk
 ```
 
-**Distribución sugerida (100 GB):**
+### Esquema sugerido (100 GB):
 
 | Partición   | Punto de Montaje | Tamaño  | Tipo FS | Tipo Partición |
 | ----------- | ---------------- | ------- | ------- | -------------- |
 | `/dev/sda1` | `/boot`          | 512 MB  | ext4    | Linux          |
 | `/dev/sda2` | `swap`           | 8 GB    | swap    | Linux swap     |
-| `/dev/sda3` | `/`              | 91.5 GB | ext4    | Linux          |
+| `/dev/sda3` | `/`              | \~91 GB | ext4    | Linux          |
 
-
-Crear particiones con:
-```bash
-cfdisk /dev/sda
-```
-Nota: Selecciona dos
-
-Ejecuta este comando para borrar por completo la tabla de particiones GPT y crear una nueva MBR:
+### Borrar tabla de particiones y crear nueva:
 
 ```bash
 wipefs -a /dev/sda
+cfdisk /dev/sda
 ```
 
-### 🧹 Formatear y activar particiones
+Seleccionar "dos" (MBR).
+
+### Formatear y activar particiones:
+
 ```bash
 mkfs.ext4 /dev/sda1
 mkswap /dev/sda2
@@ -92,14 +101,15 @@ mount /dev/sda1 /mnt/boot
 pacstrap /mnt base base-devel linux linux-firmware linux-headers grub vim
 ```
 
-Generar `fstab`:
+### Generar `fstab`:
+
 ```bash
 genfstab -U /mnt > /mnt/etc/fstab
 ```
 
 ---
 
-## 🧳 5. Chroot al sistema instalado
+## 🛫 5. Chroot al Sistema Instalado
 
 ```bash
 arch-chroot /mnt
@@ -109,78 +119,67 @@ arch-chroot /mnt
 
 ## ⚙️ 6. Configuración del Sistema
 
-### Configuración de localización y zona horaria
+### Localización y zona horaria:
 
 ```bash
-echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+echo "es_PE.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
-export LANG=es_ES.UTF-8
+export LANG=es_PE.UTF-8
+echo LANG=es_PE.UTF-8 > /etc/locale.conf
+echo KEYMAP=es > /etc/vconsole.conf
+ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
+hwclock --systohc
 timedatectl set-ntp true
 ```
 
-### GRUB (para BIOS/UEFI)
+### Configuración de GRUB (BIOS/MBR):
+
 ```bash
 grub-install --target=i386-pc /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
-Opcional:
-```bash
-vim /etc/default/grub
-# Puedes ajustar GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"
-```
+
 ---
 
-## ⚙️ 7. Configuración del Sistema
+## 🔧 7. Red, Servicios y Paquetes Básicos
 
-### Configuración de red y servicios
+### Servicios de red:
+
 ```bash
-pacman -S networkmanager net-tools reflector xdg-utils xdg-user-dirs
-```
-Habilitar servicios:
-```bash
+pacman -S networkmanager reflector net-tools xdg-utils xdg-user-dirs
 systemctl enable NetworkManager
 ```
 
-### Paquetes básicos
+### Utilidades esenciales:
+
 ```bash
-pacman -S git wget curl openssh unzip p7zip lsb-release file eog xarchiver kitty
+pacman -S git wget curl openssh unzip p7zip lsb-release file kitty eog xarchiver
 ```
 
-### Zona horaria y reloj
-```bash
-ln -sf /usr/share/zoneinfo/America/Lima /etc/localtime
-timedatectl set-timezone America/Lima
-hwclock --systohc
-```
+### Optimizar `pacman.conf` (opcional):
 
-### Localización
-```bash
-vim /etc/locale.gen
-# Descomenta: es_PE.UTF-8
-locale-gen
-echo LANG=es_PE.UTF-8 > /etc/locale.conf
-echo KEYMAP=es > /etc/vconsole.conf
-```
-
-### Configuración opcional de `pacman`
 ```bash
 vim /etc/pacman.conf
-Activar:
-# Color
-# CheckSpace
-# VerbosePkgLists
-# ParallelDownloads = 5
-# ILoveCandy
 ```
+
+Activa:
+
+- Color
+- CheckSpace
+- VerbosePkgLists
+- ParallelDownloads = 5
+- ILoveCandy
+
 ---
 
-## 🌐 8. Hostname y red
+## 🌐 8. Hostname y Red
 
 ```bash
 echo archcat > /etc/hostname
 ```
 
 Editar `/etc/hosts`:
+
 ```bash
 127.0.0.1   localhost
 ::1         localhost
@@ -189,24 +188,24 @@ Editar `/etc/hosts`:
 
 ---
 
-## 🔐 9. Contraseña y usuario
+## 🔐 9. Contraseña y Usuario
 
-Contraseña root:
 ```bash
 passwd
-```
-
-Crear usuario:
-```bash
 useradd -mG wheel drsilfo
 passwd drsilfo
 EDITOR=vim visudo
-# Descomenta: %wheel ALL=(ALL:ALL) ALL
+```
+
+Descomenta la línea:
+
+```bash
+%wheel ALL=(ALL:ALL) ALL
 ```
 
 ---
 
-## 🔄 10. Actualizar mirrorlist
+## 🔄 10. Mirrorlist Actualizado
 
 ```bash
 reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
@@ -214,49 +213,76 @@ reflector --verbose --latest 10 --protocol https --sort rate --save /etc/pacman.
 
 ---
 
-## 🔁 11. Salir y reiniciar
+## ↺ 11. Finalizar Instalación
 
 ```bash
 exit
+umount -R /mnt
 reboot
 ```
+
 ---
 
-## 🖥️ Integración con VMware
+## 🖥️ 12. Integración con VMware (ya dentro del sistema)
 
 ```bash
 paru -S open-vm-tools xf86-video-vmware xf86-input-vmmouse
 sudo systemctl enable --now vmtoolsd.service
 ```
+
 ---
 
-## 💠 Instalar Hyprland y dependencias
+## 🛀 13. Instalación de Hyprland y Dependencias
+
+Basado en [la guía oficial de Hyprland](https://wiki.hypr.land/Getting-Started/Installation/):
 
 ```bash
-sudo pacman -S hyprland hyprpaper xorg-xwayland waybar wofi qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-gnome network-manager-applet pipewire wireplumber pavucontrol thunar thunar-volman tumbler gvfs noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
+sudo pacman -S hyprland hyprpaper xorg-xwayland waybar wofi \
+  qt5-wayland qt6-wayland xdg-desktop-portal-hyprland \
+  polkit-gnome network-manager-applet pipewire wireplumber \
+  pavucontrol thunar thunar-volman tumbler gvfs \
+  noto-fonts ttf-dejavu ttf-font-awesome ttf-jetbrains-mono
 ```
----
-# 🧑‍💻 Preparación del Entorno Gráfico
 
-Una vez hayas iniciado sesión como el usuario no-root (ej. `drsilfo`), de terminal funcional antes de lanzar Hyprland, crea la configuración de Hyprland e indica que se ejecute `kitty` al inicio de la sesión gráfica:
+---
+
+## 🧑‍💻 14. Configuración del Entorno Hyprland
+
+Inicia sesión como tu usuario no-root:
 
 ```bash
 mkdir -p ~/.config/hypr
-echo "exec-once = kitty" > ~/.config/hypr/hyprland.conf
+cp /etc/xdg/hypr/hyprland.conf ~/.config/hypr/hyprland.conf
 ```
+
+Agrega la línea:
+
+```conf
+exec-once = kitty
+```
+
+También puedes explorar ejemplos desde [Hyprland Master Tutorial](https://wiki.hypr.land/Getting-Started/Master-Tutorial/)
+
 ---
 
-## 🔐 Login Manager (opcional)
+## 🔐 15. Login Manager (Opcional)
 
-Recomendado: greetd + tuigreet
+### greetd + tuigreet
+
 ```bash
 sudo pacman -S greetd
 yay -S greetd-tuigreet
+```
+
+Habilita el servicio:
+
+```bash
 sudo systemctl enable greetd
 ```
-Nota: Requiete tener instalar yay
-Configuración de archivo ´/etc/greetd/config.toml´ :
-```bash
+
+Edita `/etc/greetd/config.toml`:
+
+```toml
 [terminal]
 vt = 1
 
@@ -264,30 +290,27 @@ vt = 1
 command = "tuigreet --cmd Hyprland"
 user = "drsilfo"
 ```
-Reinicia el sistema
+
+Reinicia:
+
 ```bash
 reboot
 ```
+
 ---
 
-## 🛡️ Repositorios adicionales (opcional)
+## 🛡️ 16. Repositorios Adicionales (Opcionales)
 
-### AUR (Paru)
+### AUR con `paru`
+
 ```bash
 git clone https://aur.archlinux.org/paru-bin.git
 cd paru-bin
 makepkg -si
 ```
 
-### BlackArch (opcional, uso avanzado)
-```bash
-mkdir -p ~/repositorio/blackarch
-cd ~/repositorio/blackarch
-curl -O https://blackarch.org/strap.sh
-chmod +x strap.sh
-sudo ./strap.sh
-```
-### YAY 
+### `yay` (alternativa):
+
 ```bash
 sudo pacman -S --needed base-devel git
 git clone https://aur.archlinux.org/yay.git
@@ -295,8 +318,21 @@ cd yay
 makepkg -si
 ```
 
+### BlackArch (avanzado):
+
+```bash
+mkdir -p ~/repositorio/blackarch
+cd ~/repositorio/blackarch
+curl -O https://blackarch.org/strap.sh
+chmod +x strap.sh
+sudo ./strap.sh
+```
+
 ---
 
 ## ✅ Conclusión
 
-Con estos pasos tienes un sistema Arch Linux **ligero, moderno y personalizado**, con **Hyprland** corriendo sobre **Wayland**, totalmente funcional en **VMware** con soporte para red, gráficos, sonido y herramientas esenciales.
+Ahora tienes un sistema **Arch Linux** minimalista, moderno y funcional sobre **Wayland** con **Hyprland**, optimizado para **VMware**, con soporte para red, sonido, fuentes y una terminal estéticamente potente (Kitty).
+
+Explora el [ecosistema Hyprland](https://wiki.hypr.land/Hypr-Ecosystem/) para seguir personalizando tu entorno gráfico con notificaciones, portales, widgets, y más.
+
