@@ -205,9 +205,39 @@ sudo systemctl enable vmtoolsd
 sudo systemctl start vmtoolsd
 ```
 ## 🪟 10. Instalación del Entorno Hyprland (Wayland)
-Instalación de gestor de ventanas, controladores gráficos y herramientas del entorno:
+
+Instalación del gestor de ventanas, controladores gráficos, explorador de archivos y herramientas del entorno:
+
+Core de Hyprland y Portales Wayland
 ```bash
-sudo pacman -S hyprland qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-kde-agent waybar rofi-wayland dunst grim slurp wl-clipboard swaylock swayidle
+sudo pacman -S hyprland qt5-wayland qt6-wayland xdg-desktop-portal-hyprland polkit-kde-agent
+```
+Barra de estado, Fondo de pantalla, Notificaciones y Lanzador
+```bash
+sudo pacman -S waybar hyprpaper dunst rofi-wayland
+```
+💡Nota: Para activar el fondo crea el archivo de configuración `~/.config/hypr/hyprpaper.conf`:
+```bash
+preload = /ruta/a/tu/imagen.png
+wallpaper = ,/ruta/a/tu/imagen.png
+```
+💡Nota: Para activar el fondo crea el archivo de configuración `~/.config/hypr/hyprland.conf`:
+```bash
+exec-once = hyprpaper & waybar
+```
+Explorador de archivos gráfico y Utilidades
+```bash
+sudo pacman -S thunar thunar-archive-plugin tumbler
+```
+Capturas de pantalla y Portapapeles
+```bash
+sudo pacman -S grim slurp wl-clipboard swaylock swayidle
+```
+Servidor de Audio y Controladores (PipeWire)
+```bash
+sudo pacman -S pipewire pipewire-pulse wireplumber pavucontrol pamixer playerctl
+# Iniciar y habilitar el servicio de audio para tu usuario
+systemctl --user enable --now pipewire pipewire-pulse wireplumber
 ```
 ## 🔐 11. Configuración del Gestor de Inicio (`greetd` + `tuigreet`)
 Instalación de `greetd`:
