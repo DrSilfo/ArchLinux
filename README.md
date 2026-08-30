@@ -88,7 +88,7 @@ cfdisk /dev/sda
 Formatear y activar particiones:
 
 ```bash
-mkfs.exr4 /dev/sda1
+mkfs.ext4 /dev/sda1
 mkswap /dev/sda2
 swapon /dev/sda2
 mkfs.ext4 /dev/sda3
@@ -171,6 +171,7 @@ pacman -S networkmanager openssh reflector net-tools xdg-utils xdg-user-dirs git
 
 systemctl enable NetworkManager
 systemctl enable sshd
+systemctl enable reflector.timer
 ```
 ⚙️ Optimización de `pacman.conf` (Opcional)
 Edita `/etc/pacman.conf`
@@ -200,9 +201,8 @@ reboot
 ## 🖥️ 09. Integración con VMware Tools
 Inicia sesión con tu usuario `drsilfo` y ejecuta:
 ```bash
-sudo pacman -S open-vm-tools xf86-video-vmware xf86-input-vmmouse gtkmm3 mesa
-sudo systemctl enable vmtoolsd
-sudo systemctl start vmtoolsd
+sudo pacman -S open-vm-tools xf86-input-vmmouse gtkmm3 mesa
+sudo systemctl enable --now vmtoolsd
 ```
 ## 🪟 10. Instalación del Entorno Hyprland (Wayland)
 
