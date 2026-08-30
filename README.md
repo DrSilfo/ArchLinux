@@ -246,6 +246,11 @@ cd yay
 makepkg -si
 cd .. && rm -rf yay
 ```
+## 🏁 13. Finalización
+Reinicia el sistema para ingresar directamente mediante `tuigreet` a tu nuevo entorno Hyprland:
+```bash
+sudo reboot
+```
 ## 🛡️ Anexo: Herramientas de Ciberseguridad (Opcional)
 > [!WARNING]
 > La adición de repositorios de terceros como **BlackArch** puede reemplazar librerías del sistema y afectar la estabilidad del entorno gráfico Hyprland. Se recomienda instalar únicamente las herramientas específicas que necesites vía AUR o contenedores.
@@ -262,10 +267,4 @@ chmod +x strap.sh
 Ejecutar el script con privilegios elevados
 ```bash
 sudo ./strap.sh
-```
-
-## 🏁 13. Finalización
-Reinicia el sistema para ingresar directamente mediante `tuigreet` a tu nuevo entorno Hyprland:
-```bash
-sudo reboot
 ```
