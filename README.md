@@ -264,14 +264,14 @@ sudo systemctl enable greetd
 ## 🛠️ 12. Gestores de Paquetes AUR (Opcional)
 Instalación de `paru` (Recomendado):
 ```bash
-git clone [https://aur.archlinux.org/paru-bin.git](https://aur.archlinux.org/paru-bin.git)
+git clone https://aur.archlinux.org/paru-bin.git
 cd paru-bin
 makepkg -si
 cd .. && rm -rf paru-bin
 ```
 Alternativa `yay`:
 ```bash
-git clone [https://aur.archlinux.org/yay.git](https://aur.archlinux.org/yay.git)
+git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 cd .. && rm -rf yay
