@@ -1,31 +1,49 @@
-# Fix the Java Problem
-export _JAVA_AWT_WM_NONREPARENTING=1
-
-# Enable Powerlevel10k instant prompt. Should stay at the top of ~/.zshrc.
+# 1. Powerlevel10k Instant Prompt (Debe ir al inicio del archivo)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Set up the prompt
+# 2. Variables de entorno e historial
+export _JAVA_AWT_WM_NONREPARENTING=1
+export HISTSIZE=10000
+export SAVEHIST=10000
+export HISTFILE=~/.zsh_history
 
-autoload -Uz promptinit
-promptinit
-prompt adam1
+# Optimización del PATH (Elimina duplicados automáticamente)
+typeset -U path
+path=(
+  $HOME/.local/bin
+  /snap/bin
+  /usr/sandbox
+  /usr/local/sbin
+  /usr/local/bin
+  /usr/sbin
+  /usr/bin
+  /sbin
+  /bin
+  $path
+)
 
-setopt histignorealldups sharehistory
-
-# Use emacs keybindings even if our EDITOR is set to vi
+# 3. Opciones de Zsh y atajos de teclado (Keybindings)
+setopt histignorealldups sharehistory hist_ignore_space
 bindkey -e
 
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=1000
-SAVEHIST=1000
-HISTFILE=~/.zsh_history
+bindkey "^[[H"    beginning-of-line
+bindkey "^[[F"    end-of-line
+bindkey "^[[3~"   delete-char
+bindkey "^[[1;3C" forward-word
+bindkey "^[[1;3D" backward-word
 
-# Use modern completion system
+# 4. Sistema de autocompletado optimizado (Compinit)
 autoload -Uz compinit
-compinit
+# Revisa actualizaciones de autocompletado solo 1 vez al día para acelerar el inicio de la terminal
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.m+1) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
+# Estilos de autocompletado
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
@@ -33,25 +51,13 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*' menu select=2
 eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-zstyle ':completion:*' menu select=long
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
 zstyle ':completion:*' use-compctl false
 zstyle ':completion:*' verbose true
-
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-
-# Manual configuration
-
-PATH=/root/.local/bin:/snap/bin:/usr/sandbox/:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/share/games:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
-
-# Manual aliases
+# 5. Alias de comandos
 alias ll='lsd -lh --group-dirs=first'
 alias la='lsd -a --group-dirs=first'
 alias l='lsd --group-dirs=first'
@@ -59,38 +65,42 @@ alias lla='lsd -lha --group-dirs=first'
 alias ls='lsd --group-dirs=first'
 alias cat='bat'
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Plugins
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh-sudo/sudo.plugin.zsh
-
-# Functions
+# 6. Funciones personalizadas
 function mkt(){
-	mkdir {nmap,content,exploits,scripts}
+	mkdir -p {nmap,content,exploits,scripts}
 }
 
-# Extract nmap information
+# Extracción de puertos de Nmap (Procesamiento directo en memoria)
 function extractPorts(){
-	ports="$(cat $1 | grep -oP '\d{1,5}/open' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
-	ip_address="$(cat $1 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort -u | head -n 1)"
-	echo -e "\n[*] Extracting information...\n" > extractPorts.tmp
-	echo -e "\t[*] IP Address: $ip_address"  >> extractPorts.tmp
-	echo -e "\t[*] Open ports: $ports\n"  >> extractPorts.tmp
-	echo $ports | tr -d '\n' | xclip -sel clip
-	echo -e "[*] Ports copied to clipboard\n"  >> extractPorts.tmp
-	cat extractPorts.tmp; rm extractPorts.tmp
+	local file="$1"
+	if [[ ! -f "$file" ]]; then
+		echo -e "\n[!] El archivo '$file' no existe.\n"
+		return 1
+	fi
+
+	local ports="$(grep -oP '\d{1,5}/open' "$file" | awk -F'/' '{print $1}' | xargs | tr ' ' ',')"
+	local ip_address="$(grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' "$file" | sort -u | head -n 1)"
+
+	if [[ -n "$ports" ]]; then
+		echo -e "\n[*] Extracting information...\n"
+		echo -e "\t[*] IP Address: $ip_address"
+		echo -e "\t[*] Open ports: $ports\n"
+		echo -n "$ports" | xclip -sel clip
+		echo -e "[*] Ports copied to clipboard\n"
+	else
+		echo -e "\n[!] No se encontraron puertos abiertos en el archivo.\n"
+	fi
 }
 
-#Settarget HTB
+# Configuración de objetivo HTB
 function settarget(){
-  ip_address=$1
-  machine_name=$2
-  echo "$ip_address $machine_name" > $HOME/.config/qtile/htbtarget
+  local ip_address=$1
+  local machine_name=$2
+  mkdir -p "$HOME/.config"
+  echo "$ip_address $machine_name" > "$HOME/.config/htbtarget"
 }
 
-# Set 'man' colors
+# Colores para páginas MAN
 function man() {
     env \
     LESS_TERMCAP_mb=$'\e[01;31m' \
@@ -103,43 +113,37 @@ function man() {
     man "$@"
 }
 
-# fzf improvement
+# Previsualización con FZF
 function fzf-lovely(){
-
+	local preview_cmd='[[ $(file --mime {}) =~ binary ]] && echo {} is a binary file || (bat --style=numbers --color=always {} || cat {}) 2> /dev/null | head -500'
 	if [ "$1" = "h" ]; then
-		fzf -m --reverse --preview-window down:20 --preview '[[ $(file --mime {}) =~ binary ]] &&
- 	                echo {} is a binary file ||
-	                 (bat --style=numbers --color=always {} ||
-	                  highlight -O ansi -l {} ||
-	                  coderay {} ||
-	                  rougify {} ||
-	                  cat {}) 2> /dev/null | head -500'
-
+		fzf -m --reverse --preview-window down:20 --preview "$preview_cmd"
 	else
-	        fzf -m --preview '[[ $(file --mime {}) =~ binary ]] &&
-	                         echo {} is a binary file ||
-	                         (bat --style=numbers --color=always {} ||
-	                          highlight -O ansi -l {} ||
-	                          coderay {} ||
-	                          rougify {} ||
-	                          cat {}) 2> /dev/null | head -500'
+		fzf -m --preview "$preview_cmd"
 	fi
 }
 
+# Borrado seguro de archivos
 function rmk(){
-	scrub -p dod $1
-	shred -zun 10 -v $1
+	if [[ -f "$1" ]]; then
+		scrub -p dod "$1"
+		shred -zun 10 -v "$1"
+	else
+		echo "[!] El archivo no existe"
+	fi
 }
 
-# Finalize Powerlevel10k instant prompt. Should stay at the bottom of ~/.zshrc.
-(( ! ${+functions[p10k-instant-prompt-finalize]} )) || p10k-instant-prompt-finalize
+# 7. Carga de Integraciones, Plugins y Tema
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-bindkey "^[[H"    beginning-of-line
-bindkey "^[[F"    end-of-line
-bindkey "^[[3~"   delete-char
-bindkey "^[[1;3C" forward-word
-bindkey "^[[1;3D" backward-word
-source ~/powerlevel10k/powerlevel10k.zsh-theme
-source ~/powerlevel10k/powerlevel10k.zsh-theme
-source ~/powerlevel10k/powerlevel10k.zsh-theme
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+# Verificación de plugins antes de cargar
+[[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -f /usr/share/zsh-sudo/sudo.plugin.zsh ]] && source /usr/share/zsh-sudo/sudo.plugin.zsh
+
+# Tema Powerlevel10k
+[[ -f ~/powerlevel10k/powerlevel10k.zsh-theme ]] && source ~/powerlevel10k/powerlevel10k.zsh-theme
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
+# Finalización de Powerlevel10k Instant Prompt (Debe ir al final)
+(( ! ${+functions[p10k-instant-prompt-finalize]} )) || p10k-instant-prompt-finalize
