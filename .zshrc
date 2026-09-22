@@ -92,12 +92,31 @@ function extractPorts(){
 	fi
 }
 
-# Configuración de objetivo HTB
+# Configuración de objetivo HTB con notificaciones
 function settarget(){
   local ip_address=$1
   local machine_name=$2
+  
+  if [[ -z "$ip_address" ]]; then
+    echo -e "\n[!] Uso: settarget <IP> [Nombre_Máquina]\n"
+    return 1
+  fi
+
   mkdir -p "$HOME/.config"
-  echo "$ip_address $machine_name" > "$HOME/.config/htbtarget"
+  
+  if [[ -n "$machine_name" ]]; then
+    echo "$ip_address - $machine_name" > "$HOME/.config/htbtarget"
+    notify-send "HTB Target" "Objetivo fijado: $ip_address ($machine_name)" -u normal -i network-server -t 4000
+  else
+    echo "$ip_address" > "$HOME/.config/htbtarget"
+    notify-send "HTB Target" "Objetivo fijado: $ip_address" -u normal -i network-server -t 4000
+  fi
+}
+
+# Función opcional para limpiar el objetivo activo
+function cleartarget(){
+  echo "No target" > "$HOME/.config/htbtarget"
+  notify-send "HTB Target" "Objetivo removido" -u low -i dialog-information -t 3000
 }
 
 # Colores para páginas MAN
